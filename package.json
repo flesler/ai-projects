@@ -1,0 +1,70 @@
+{
+  "name": "aip",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "AI project management CLI - create and manage projects, tasks, and agents",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "aip": "dist/index.js"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "npm run build:code",
+    "build:code": "tsup --no-dts",
+    "build:all": "tsup",
+    "build:check": "tsc --noEmit",
+    "build:watch": "npm run build:code -- --watch",
+    "build:clean": "rimraf dist/*",
+    "start": "dist/index.js",
+    "dev": "npm run build:watch -- --onSuccess \"dist/index.js\"",
+    "cli": "npm run build && npm start --",
+    "ts": "tsx",
+    "eslint": "eslint --cache",
+    "lint": "npm run eslint -- 'src/**/*.ts'",
+    "lint:fix": "npm run lint -- --fix",
+    "test": "tsx bin/test.ts"
+  },
+  "keywords": [
+    "ai",
+    "project-management",
+    "task-management",
+    "cli",
+    "hermes-agent",
+    "autonomous-agents"
+  ],
+  "author": "Ariel Flesler <aflesler@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flesler/ai-projects.git"
+  },
+  "homepage": "https://github.com/flesler/ai-projects#readme",
+  "bugs": {
+    "url": "https://github.com/flesler/ai-projects/issues"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "yaml": "^2.8.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "rimraf": "^6.0.1",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.3",
+    "types-package-json": "^2.0.39",
+    "typescript": "^5.8.3"
+  }
+}
