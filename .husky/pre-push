@@ -1,0 +1,14 @@
+#!/bin/sh
+
+if [ -s "$HOME/.nvm/nvm.sh" ]; then
+  # Try to use NVM if available, otherwise continue with current node
+  . "$HOME/.nvm/nvm.sh"
+  nvm use
+fi
+
+# Run tests before pushing
+npm run test
+if [ $? -ne 0 ]; then
+  echo "Tests failed; aborting push."
+  exit 1
+fi

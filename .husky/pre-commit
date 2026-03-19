@@ -1,5 +1,40 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+#!/bin/sh
 
-npm run docs
+# Check for DONTCOMMIT in staged files (excluding this hook file)
+if git diff --cached --no-ext-diff -U0 -- ':!.husky/pre-commit' | grep -i 'DONTCOMMIT'; then
+  echo "Error: Found 'DONTCOMMIT' in staged changes. Please remove it before committing."
+  exit 1
+fi
+
+# Check for 3+ consecutive single-line comments (likely commented-out code) in .ts/.tsx files only
+consecutive_comments=$(git diff --cached --no-ext-diff --diff-filter=ACM -U0 -- '*.ts' '*.tsx' | awk '
+  /^@@/ { count=0 }
+  /^\+[[:space:]]*\/\// { count++ }
+  /^\+/ && !/^\+[[:space:]]*\/\// { count=0 }
+  count >= 3 { found=1; exit }
+  END { print found+0 }
+')
+
+if [ "$consecutive_comments" = "1" ]; then
+  echo "Error: Found 3+ consecutive comment lines in staged changes."
+  echo "This usually indicates commented-out code. Either:"
+  echo "  - Remove/uncomment the code if it's temporary"
+  echo "  - Use /* */ block comments if it's legit documentation that should be committed"
+  exit 1
+fi
+
+if [ -s "$HOME/.nvm/nvm.sh" ]; then
+  # Try to use NVM if available, otherwise continue with current node
+  . "$HOME/.nvm/nvm.sh"
+  nvm use
+fi
+
+# Generate documentation and run lint:fix
+npm run docs && npm run lint:fix
+if [ $? -ne 0 ]; then
+  echo "Checks failed; aborting commit."
+  exit 1
+fi
+
+# Auto-add generated files
 git add docs/aip.md

@@ -1,0 +1,4 @@
+#!/bin/sh
+# Remove trailing period from commit message, frequently added by Cursor
+sed -i.bak 's/\.$//' "$1"
+rm "$1.bak"  # Clean up the backup
