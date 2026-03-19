@@ -48,40 +48,9 @@ const util = {
     return join(...segments)
   },
 
-  help(): void {
-    console.log(`
-AIP - AI Project Management CLI
-
-Usage:
-  aip <noun> <verb> [options]
-
-Nouns:
-  project   Manage projects
-  task      Manage tasks
-  agent     Manage agents
-
-Examples:
-  aip project create --name "My Project" --description "Description"
-  aip task create --project "my-project" --name "Task Name"
-  aip task complete --project "my-project" --task "task-name"
-  aip agent create --name "researcher" --description "Research agent"
-`)
-    process.exit(1)
-  },
-
   /** Empty function */
   noop: (): void => {
   },
-
-  /** Removes nulls & undefineds from an object */
-  omitNils: <T extends object>(obj: T): T => (
-    _.omitBy(obj, _.isNil) as T
-  ),
-
-  /** Removes empty strings, empty arrays, nulls & undefineds from an object */
-  omitEmpty: <T extends {}>(obj: T): T => (
-    _.omitBy(obj, v => v === '' || _.isNil(v) || _.isArray(v) && _.isEmpty(v)) as T
-  ),
 
   omitByDeep: <T extends {}>(obj: T, fn: (value: any) => boolean): T => {
     if (_.isArray(obj)) {

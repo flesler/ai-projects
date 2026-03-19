@@ -1,11 +1,6 @@
 .cursor/local
-.cursor/rules
 tmp/
-test-data/
-.evil
-bin/test.ts
-sources.json
-logs.json
+bin/test
 
 # Dependencies
 node_modules/
@@ -15,9 +10,6 @@ yarn-error.log*
 
 # Build output
 dist/
-
-# IDE
-.vscode/
 
 # OS
 .DS_Store

@@ -1,9 +1,9 @@
 import eslintJs from '@eslint/js'
-import tsPlugin from '@typescript-eslint/eslint-plugin'
-import importPlugin from 'eslint-plugin-import'
 import stylisticPlugin from '@stylistic/eslint-plugin'
-import unusedImportsPlugin from 'eslint-plugin-unused-imports'
+import tsPlugin from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
+import importPlugin from 'eslint-plugin-import'
+import unusedImportsPlugin from 'eslint-plugin-unused-imports'
 
 export default [
   // Global ignores (replaces .eslintignore)
@@ -12,11 +12,6 @@ export default [
       'node_modules',
       'dist',
       'bin/test',
-      // Auto-generated GraphQL types
-      'src/types/graphql.ts',
-      'src/types/resolvers.ts',
-      'src/types/prisma/',
-      'src/db/schema.ts',
     ],
   },
 
@@ -38,7 +33,7 @@ export default [
 
   // TypeScript strict rules (converted from legacy config)
   {
-    files: ['**/*.ts', '**/*.tsx'],
+    files: ['**/*.ts'],
     plugins: {
       '@typescript-eslint': tsPlugin,
     },
@@ -47,7 +42,7 @@ export default [
 
   // TypeScript and import plugin configuration
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+    files: ['**/*.ts', '**/*.js'],
     plugins: {
       '@typescript-eslint': tsPlugin,
       '@stylistic': stylisticPlugin,
@@ -57,7 +52,7 @@ export default [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        project: './tsconfig.json',
+        project: './bin/tsconfig.json',
         extraFileExtensions: [],
         warnOnUnsupportedTypeScriptVersion: false,
       },

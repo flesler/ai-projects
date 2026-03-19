@@ -9,10 +9,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
-    // TODO: Aim to be able to enable this
     "exactOptionalPropertyTypes": false,
-    // This one would be nice, causes a TON of errors
-    // "noUncheckedIndexedAccess": true,
     "resolveJsonModule": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
