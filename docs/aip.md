@@ -48,3 +48,7 @@ Shows available commands for this noun.
 | `--project` | string | Yes | Project slug |
 | `--name` | string | Yes | Task name |
 
+### `task index`
+
+No options.
+

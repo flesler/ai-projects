@@ -1,13 +1,7 @@
-/**
- * aip task complete
- *
- * Mark a task as complete
- */
-
 import { z } from 'zod'
-import { defineCommand } from 'src/util/defineCommand.js'
+import commands from 'src/util/commands.js'
 
-export default defineCommand(
+export default commands.define(
   z.object({
     project: z.string().describe('Project slug'),
     task: z.string().describe('Task name'),

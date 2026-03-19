@@ -5,7 +5,8 @@
  */
 
 import type { z } from 'zod'
-import util, { namespaces } from 'src/util/index.js'
+import util from 'src/util/index.js'
+import commands from 'src/util/commands.js'
 
 /** Extract option information from a zod schema */
 const extractOptions = (schema: z.ZodObject<any>): Array<{ name: string; type: string; required: boolean; description?: string }> => {
@@ -104,7 +105,7 @@ const generateNounDoc = async (noun: string, command: any): Promise<string> => {
 
 /** Main documentation generator */
 const generateDocs = async () => {
-  const ns = await namespaces()
+  const commandsMap = await commands.load()
 
   let md = '# AIP CLI Reference\n\n'
   md += 'AI Project Management CLI - Command reference documentation.\n\n'
@@ -115,10 +116,10 @@ const generateDocs = async () => {
   md += '## Commands\n\n'
 
   // Sort nouns alphabetically
-  const sortedNouns = Object.keys(ns).sort()
+  const sortedNouns = Object.keys(commandsMap).sort()
 
   for (const noun of sortedNouns) {
-    const commands = ns[noun]
+    const nounCommands = commandsMap[noun]
     md += `## ${noun.charAt(0).toUpperCase() + noun.slice(1)}\n\n`
 
     // Try to load noun-level command (index.ts)
@@ -132,9 +133,10 @@ const generateDocs = async () => {
     }
 
     // Sort verbs alphabetically
-    const sortedCommands = commands.sort((a, b) => a.verb.localeCompare(b.verb))
+    const sortedVerbs = Object.keys(nounCommands).sort()
 
-    for (const { verb, command } of sortedCommands) {
+    for (const verb of sortedVerbs) {
+      const command = nounCommands[verb]
       md += generateCommandDoc(noun, verb, command)
     }
   }

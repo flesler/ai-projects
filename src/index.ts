@@ -1,6 +1,6 @@
 import 'zod'
 import { parser } from 'zod-opts'
-import { schemaToOptions } from './util/index.js'
+import commands from './util/commands.js'
 
 async function main() {
   const args = process.argv.slice(2)
@@ -10,12 +10,12 @@ async function main() {
     if (verb) {
       const commandModule = await import(`./commands/${noun}/${verb}.js`)
       const command = commandModule.default
-      const parsed = parser().name(`${noun} ${verb}`).options(schemaToOptions(command.schema)).parse(rest)
+      const parsed = parser().name(`${noun} ${verb}`).options(commands.schemaToOptions(command.schema)).parse(rest)
       await command.handler(parsed)
     } else if (noun) {
       const commandModule = await import(`./commands/${noun}/index.js`)
       const command = commandModule.default
-      const parsed = parser().name(noun).options(schemaToOptions(command.schema)).parse(rest)
+      const parsed = parser().name(noun).options(commands.schemaToOptions(command.schema)).parse(rest)
       await command.handler(parsed)
     } else {
       console.log('Usage: aip <noun> [verb] [options]')

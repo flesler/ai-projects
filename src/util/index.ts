@@ -275,47 +275,6 @@ const util = {
 
 export default util
 
-export { defineCommand, type CommandDef, schemaToOptions } from './defineCommand.js'
-
-import type { CommandDef } from './defineCommand.js'
-
-/** Get all command namespaces (nouns) with their commands */
-export const namespaces = async (): Promise<Record<string, Array<{ verb: string; command: CommandDef<any> }>>> => {
-  const glob = (await import('fast-glob')).default
-
-  // Find all command files (excluding index.ts for now, we'll handle nouns separately)
-  const commandFiles = await glob('src/commands/*/*.ts', { cwd: process.cwd() })
-
-  const result: Record<string, Array<{ verb: string; command: CommandDef<any> }>> = {}
-
-  for (const file of commandFiles) {
-    // Split by forward slash since glob always returns forward slashes
-    const parts = file.split('/')
-    const noun = parts[2] // src/commands/[noun]/[verb].ts
-    const verbFile = parts[3] // [verb].ts
-    const verb = verbFile.replace('.ts', '')
-
-    // Skip index files for now (they're noun-level commands)
-    if (verb === 'index') {
-      continue
-    }
-
-    if (!result[noun]) {
-      result[noun] = []
-    }
-
-    // Dynamically import the command
-    const commandModule = await import(`file://${process.cwd()}/${file}`)
-    const command = commandModule.default
-
-    if (command && command.schema && command.handler) {
-      result[noun].push({ verb, command })
-    }
-  }
-
-  return result
-}
-
 /** Shortcut for Array<keyof T> */
 export type KeysOf<T> = Array<keyof T>
 

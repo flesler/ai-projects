@@ -1,13 +1,7 @@
-/**
- * aip agent create
- *
- * Create a new agent profile
- */
-
 import { z } from 'zod'
-import { defineCommand } from 'src/util/defineCommand.js'
+import commands from 'src/util/commands.js'
 
-export default defineCommand(
+export default commands.define(
   z.object({
     name: z.string().describe('Agent name'),
     description: z.string().describe('Agent description'),
