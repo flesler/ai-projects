@@ -27,7 +27,9 @@
     "eslint": "eslint --cache",
     "lint": "npm run eslint -- 'src/**/*.ts'",
     "lint:fix": "npm run lint -- --fix",
-    "test": "tsx bin/test.ts"
+    "test": "tsx bin/test.ts",
+    "docs": "tsx bin/document.ts",
+    "prepare": "husky"
   },
   "keywords": [
     "ai",
@@ -52,19 +54,30 @@
   },
   "dependencies": {
     "lodash": "^4.17.21",
-    "yaml": "^2.8.0",
-    "zod": "^3.22.0"
+    "moment": "^2.30.1",
+    "yaml": "^2.8.0"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.0",
-    "@types/node": "^20.0.0",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
-    "eslint": "^8.57.0",
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^5.7.0",
+    "@types/eslint": "^9.6.1",
+    "@types/lodash": "^4.17.23",
+    "@types/moment": "^2.13.0",
+    "@types/node": "^25.0.9",
+    "@typescript-eslint/eslint-plugin": "^8.53.0",
+    "@typescript-eslint/parser": "^8.53.0",
+    "eslint": "^10.0.3",
+    "eslint-config-airbnb-extended": "^3.0.1",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "fast-glob": "^3.3.3",
+    "husky": "^9.1.7",
     "rimraf": "^6.0.1",
     "tsup": "^8.5.0",
     "tsx": "^4.20.3",
     "types-package-json": "^2.0.39",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "zod": "^3.25.76",
+    "zod-opts": "^1.0.0"
   }
 }

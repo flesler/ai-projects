@@ -5,13 +5,13 @@
 export const CONFIG = {
   /** Default state directory for Hermes Agent */
   DEFAULT_STATE_DIR: '/mnt/ssd/pi/.hermes',
-  
+
   /** Project directory */
   PROJECTS_DIR: 'projects',
-  
+
   /** Skills directory */
   SKILLS_DIR: 'skills',
-  
+
   /** Agents directory */
   AGENTS_DIR: 'agents',
 } as const
