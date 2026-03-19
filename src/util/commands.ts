@@ -1,8 +1,9 @@
 /** Command utilities */
 
 import fastGlob from 'fast-glob'
+import util from 'src/util/index.js'
+import { pathToFileURL } from 'url'
 import type { z, ZodObject } from 'zod'
-import util from './index.js'
 
 /** Command definition with schema and handler */
 export interface CommandDef<T extends ZodObject<any>> {
@@ -48,7 +49,7 @@ const commands = {
       const verb = verbFile.replace('.ts', '')
 
       // Dynamically import the command
-      const commandModule = await import(`file://${process.cwd()}/${file}`)
+      const commandModule = await import(pathToFileURL(`${process.cwd()}/${file}`).href)
       const command = commandModule.default
 
       if (command && command.schema && command.handler) {

@@ -2,7 +2,7 @@ import eslintJs from '@eslint/js'
 import stylisticPlugin from '@stylistic/eslint-plugin'
 import tsPlugin from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
-import importPlugin from 'eslint-plugin-import'
+import importXPlugin from 'eslint-plugin-import-x'
 import unusedImportsPlugin from 'eslint-plugin-unused-imports'
 
 export default [
@@ -22,13 +22,13 @@ export default [
   // Import plugin recommended + typescript configs (converted from legacy)
   {
     plugins: {
-      import: importPlugin,
+      'import-x': importXPlugin,
     },
     rules: {
-      ...importPlugin.configs.recommended.rules,
-      ...importPlugin.configs.typescript.rules,
+      ...importXPlugin.configs.recommended.rules,
+      ...importXPlugin.configs.typescript.rules,
     },
-    settings: importPlugin.configs.typescript.settings,
+    settings: importXPlugin.configs.typescript.settings,
   },
 
   // TypeScript strict rules (converted from legacy config)
@@ -46,7 +46,7 @@ export default [
     plugins: {
       '@typescript-eslint': tsPlugin,
       '@stylistic': stylisticPlugin,
-      'import': importPlugin,
+      'import-x': importXPlugin,
       'unused-imports': unusedImportsPlugin,
     },
     languageOptions: {
@@ -82,7 +82,12 @@ export default [
     },
     rules: {
       // Import plugin overrides (recommended is used above)
-      'import/no-unresolved': 'off',
+      'import-x/no-unresolved': 'off',
+      'import-x/no-named-as-default-member': 'off',
+      'import-x/namespace': 'off',
+      'import-x/default': 'off',
+      'import-x/no-named-as-default': 'off',
+      'import-x/no-duplicates': 'off',
 
       // Disabled base rules that are covered by TypeScript or stylistic
       'no-unused-vars': 'off',
