@@ -270,13 +270,6 @@ const util = {
     return process.argv[1]?.includes('/index.')
   },
 
-  /** Converts '/path/to/project/src/util/errors.test.ts' to 'src/util/errors', used by vitest */
-  toModule: (filename: string): string => {
-    return path.relative(process.cwd(), filename)
-      // Remove .test.ts extension
-      .replace(/\.test\.[tj]s$/, '')
-  },
-
   errorMessage: (err: unknown): string => {
     return err instanceof Error ? err.message : String(err)
   },
