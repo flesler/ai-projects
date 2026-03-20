@@ -1,33 +1,34 @@
-/**
- * Environment configuration
- */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import dotenv from 'dotenv'
+import os from 'os'
+import util from './index.js'
 
-export const CONFIG = {
-  /** Default state directory for Hermes Agent */
-  DEFAULT_STATE_DIR: '/mnt/ssd/pi/.hermes',
+function optionalString(key: string): string | undefined
+function optionalString(key: string, defaultValue: string): string
+function optionalString(key: string, defaultValue?: string): string | undefined {
+  return process.env[key] ?? defaultValue
+}
 
-  /** Project directory */
-  PROJECTS_DIR: 'projects',
+// @ts-expect-error - unused function
+function requiredString(key: string): string {
+  const value = optionalString(key)
+  if (typeof value !== 'string' || !value) {
+    throw new Error(`Environment variable ${key} is required`)
+  }
+  return value
+}
 
-  /** Skills directory */
-  SKILLS_DIR: 'skills',
+// @ts-expect-error - unused function
+function boolean(key: string, defaultValue = false): boolean {
+  const val = process.env[key]
+  return (val === 'true' || val === '1') ?? defaultValue
+}
 
-  /** Agents directory */
-  AGENTS_DIR: 'agents',
+dotenv.config()
+
+const defaultHome = util.join(os.homedir(), 'projects')
+
+export default {
+  PROJECTS_HOME: optionalString('PROJECTS_HOME', defaultHome),
+  NODE_ENV: optionalString('NODE_ENV', 'development'),
 } as const
-
-export function getStateDir(): string {
-  return process.env.AIP_STATE_DIR || CONFIG.DEFAULT_STATE_DIR
-}
-
-export function getProjectsDir(): string {
-  return `${getStateDir()}/${CONFIG.PROJECTS_DIR}`
-}
-
-export function getSkillsDir(): string {
-  return `${getStateDir()}/${CONFIG.SKILLS_DIR}`
-}
-
-export function getAgentsDir(): string {
-  return `${getStateDir()}/${CONFIG.AGENTS_DIR}`
-}

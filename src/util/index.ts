@@ -11,8 +11,12 @@ const util = {
   // Relative to the project root
   REPO: path.resolve(fileURLToPath(import.meta.url), '../../../'),
 
+  join: (...segments: string[]): string => {
+    return path.join(...segments)
+  },
+
   onRepo: (...segments: string[]): string => {
-    return path.resolve(util.REPO, ...segments)
+    return util.join(util.REPO, ...segments)
   },
 
   /** Ensure directory exists */
