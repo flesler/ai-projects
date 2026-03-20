@@ -8,8 +8,9 @@ export default defineCommand(
   z.object({
     project: z.string().describe('Project slug'),
     task: z.string().describe('Task slug'),
+    ingest: z.boolean().default(false).describe('Also output context ingestion for this task'),
   }),
-  async ({ project, task }) => {
+  async ({ project, task, ingest }) => {
     const taskDir = projects.getTaskDir(project, task)
 
     // Run pre-start hooks
@@ -53,5 +54,14 @@ export default defineCommand(
     console.log(`cd "${taskDir}"`)
     console.log(`export CURRENT_PROJECT="${project}"`)
     console.log(`export CURRENT_TASK="${task}"`)
+
+    // Optionally output context as a comment (for agents to read)
+    if (ingest) {
+      const content = await projects.ingestTask(project, task)
+      // Output as heredoc-style comment that can be captured
+      console.log(`# TASK_CONTEXT_START`)
+      console.log(content)
+      console.log(`# TASK_CONTEXT_END`)
+    }
   },
 )

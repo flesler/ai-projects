@@ -39,8 +39,8 @@ const findRoot = (): string => {
 /** Project root directory */
 const ROOT = findRoot()
 
-// Load .env from root
-dotenv.config({ path: path.join(ROOT, '.env') })
+// Load .env from root (silently, no tips)
+dotenv.config({ path: path.join(ROOT, '.env'), quiet: true })
 
 const defaultHome = path.join(ROOT, 'tmp', 'hermes')
 

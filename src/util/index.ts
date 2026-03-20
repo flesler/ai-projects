@@ -271,7 +271,10 @@ const util = {
   },
 
   isMain: (): boolean => {
-    return process.argv[1]?.includes('/index.')
+    // Check if this file is being run directly (not imported)
+    // Works for both 'dist/index.js' and npm-linked 'bin/aip'
+    const mainModule = process.argv[1] || ''
+    return mainModule.includes('/index.') || mainModule.endsWith('/bin/aip')
   },
 
   errorMessage: (err: unknown): string => {

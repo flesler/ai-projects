@@ -27,6 +27,7 @@ import utilIso from './util/iso.js'
 import utilJoin from './util/join.js'
 import utilLs from './util/ls.js'
 import utilOneline from './util/oneline.js'
+import utilPostmortem from './util/postmortem.js'
 import utilRead from './util/read.js'
 import utilRelative from './util/relative.js'
 import utilSlugify from './util/slugify.js'
@@ -72,6 +73,7 @@ const commands = {
     join: utilJoin,
     ls: utilLs,
     oneline: utilOneline,
+    postmortem: utilPostmortem,
     read: utilRead,
     relative: utilRelative,
     slugify: utilSlugify,

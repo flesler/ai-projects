@@ -148,6 +148,7 @@ No options.
 |--------|------|----------|-------------|
 | `--project` | string | Yes | Project slug |
 | `--task` | string | Yes | Task slug |
+| `--ingest` | boolean | No | Also output context ingestion for this task |
 
 ### `task update`
 
@@ -208,6 +209,13 @@ No options.
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
 | `--text` | string | No | Text to convert to one line (reads from stdin if not provided) |
+
+### `util postmortem`
+
+| Option | Type | Required | Description |
+|--------|------|----------|-------------|
+| `--project` | string | Yes | Project slug |
+| `--task` | string | Yes | Task slug |
 
 ### `util read`
 
