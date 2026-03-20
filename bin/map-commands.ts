@@ -70,7 +70,7 @@ util.run(async () => {
   output += `export default commands\n`
 
   // Write the generated file
-  const outputPath = util.onRepo('src/commands/index.ts')
+  const outputPath = 'src/commands/index.ts'
   const current = await util.readRepo(outputPath)
   if (current !== output) {
     await util.write(outputPath, output)

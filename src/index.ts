@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import commandMap from './commands/index.js'
 import util from './util'
+import type { CommandDef } from './util/defineCommand.js'
 
 async function main(args: string[]) {
   const [noun, verb, ...rest] = args
@@ -17,7 +18,7 @@ async function main(args: string[]) {
       process.exit(1)
     }
 
-    const command = verbs[verb]
+    const command = verbs[verb] as CommandDef<any>
     if (!command) {
       console.error(`Error: unknown command '${noun} ${verb}'`)
       console.log('Run with --help for more information')

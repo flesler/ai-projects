@@ -12,13 +12,13 @@ export default defineCommand(
   async ({ project, task }) => {
     const taskDir = projects.getTaskDir(project, task)
 
-    // Run pre-complete hooks (can prevent completion)
+    // Run pre-start hooks
     const preHookSuccess = await hooks.runHooksForContext(
       projects.getProjectDir(project),
       taskDir,
-      'pre-complete',
+      'pre-start',
       {
-        action: 'pre-complete',
+        action: 'pre-start',
         entityType: 'task',
         project,
         task,
@@ -26,26 +26,32 @@ export default defineCommand(
     )
 
     if (!preHookSuccess) {
-      throw new Error('Pre-complete hook failed, aborting task completion')
+      throw new Error('Pre-start hook failed, aborting task start')
     }
 
-    // Update status to done
-    await projects.updateTask(project, task, { status: 'done' })
-    await status.appendStatus(taskDir, 'Task completed')
+    // Update status to in-progress if not already
+    const currentMeta = await projects.getTask(project, task)
+    if (currentMeta?.status !== 'in-progress') {
+      await projects.updateTask(project, task, { status: 'in-progress' })
+      await status.appendStatus(taskDir, 'Status changed to: in-progress')
+    }
 
-    // Run post-complete hooks
+    // Run post-start hooks
     await hooks.runHooksForContext(
       projects.getProjectDir(project),
       taskDir,
-      'post-complete',
+      'post-start',
       {
-        action: 'post-complete',
+        action: 'post-start',
         entityType: 'task',
         project,
         task,
       },
     )
 
-    console.log(`Task completed: ${task}`)
+    // Output cd command and env export
+    console.log(`cd "${taskDir}"`)
+    console.log(`export CURRENT_PROJECT="${project}"`)
+    console.log(`export CURRENT_TASK="${task}"`)
   },
 )
