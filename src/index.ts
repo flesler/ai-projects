@@ -1,5 +1,6 @@
 import 'zod'
 import { parser } from 'zod-opts'
+import commandMap from './commands/index.js'
 import commands from './util/commands.js'
 
 async function main() {
@@ -7,20 +8,30 @@ async function main() {
   const [noun, verb, ...rest] = args
 
   try {
-    if (verb) {
-      const commandModule = await import(`./commands/${noun}/${verb}.js`)
-      const command = commandModule.default
-      const parsed = parser().name(`${noun} ${verb}`).options(commands.schemaToOptions(command.schema)).parse(rest)
-      await command.handler(parsed)
-    } else if (noun) {
-      const commandModule = await import(`./commands/${noun}/index.js`)
-      const command = commandModule.default
-      const parsed = parser().name(noun).options(commands.schemaToOptions(command.schema)).parse(rest)
-      await command.handler(parsed)
-    } else {
-      console.log('Usage: aip <noun> [verb] [options]')
+    if (!noun) {
+      console.error('Error: noun is required')
+      console.log('Usage: aip <noun> <verb> [options]')
       console.log('Run with --help for more information')
+      process.exit(1)
     }
+
+    if (!verb) {
+      console.error('Error: verb is required')
+      console.log('Usage: aip <noun> <verb> [options]')
+      console.log('Run with --help for more information')
+      process.exit(1)
+    }
+
+    const command = commandMap[noun as keyof typeof commandMap]?.[verb as keyof typeof commandMap[keyof typeof commandMap]]
+
+    if (!command) {
+      console.error(`Error: unknown command '${noun} ${verb}'`)
+      console.log('Run with --help for more information')
+      process.exit(1)
+    }
+
+    const parsed = parser().name(`${noun} ${verb}`).options(commands.schemaToOptions(command.schema)).parse(rest)
+    await command.handler(parsed as any)
   } catch (error) {
     console.error('Error:', error instanceof Error ? error.message : error)
     process.exit(1)

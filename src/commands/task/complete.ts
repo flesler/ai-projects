@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import commands from 'src/util/commands.js'
+import commands from '../../util/commands.js'
 
 export default commands.define(
   z.object({

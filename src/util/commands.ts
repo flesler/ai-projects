@@ -1,7 +1,7 @@
 /** Command utilities */
 
 import fastGlob from 'fast-glob'
-import util from 'src/util/index.js'
+import util from './index.js'
 import { pathToFileURL } from 'url'
 import type { z, ZodObject } from 'zod'
 

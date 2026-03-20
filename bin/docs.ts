@@ -5,8 +5,8 @@
  */
 
 import type { z } from 'zod'
-import util from 'src/util/index.js'
-import commands from 'src/util/commands.js'
+import util from '../src/util/index.js'
+import commands from '../src/util/commands.js'
 
 /** Extract option information from a zod schema */
 const extractOptions = (schema: z.ZodObject<any>): Array<{ name: string; type: string; required: boolean; description?: string }> => {

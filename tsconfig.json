@@ -22,10 +22,6 @@
     "noImplicitReturns": false,
     "removeComments": true,
     "useUnknownInCatchVariables": false,
-    "baseUrl": ".",
-    "paths": {
-      "src": ["src"],
-    },
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

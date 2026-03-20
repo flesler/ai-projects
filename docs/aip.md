@@ -30,10 +30,6 @@ aip <noun> <verb> [options]
 
 ## Task
 
-### `task`
-
-Shows available commands for this noun.
-
 ### `task complete`
 
 | Option | Type | Required | Description |
@@ -47,8 +43,4 @@ Shows available commands for this noun.
 |--------|------|----------|-------------|
 | `--project` | string | Yes | Project slug |
 | `--name` | string | Yes | Task name |
-
-### `task index`
-
-No options.
 

@@ -1,4 +1,3 @@
-import fg from 'fast-glob'
 import { defineConfig } from 'tsup'
 
 export default defineConfig((options) => {
@@ -6,7 +5,7 @@ export default defineConfig((options) => {
   const now = Date.now()
 
   return {
-    entry: ['src/index.ts', ...fg.sync('src/commands/**/*.ts')],
+    entry: ['src/index.ts'],
     format: ['esm'],
     platform: 'node',
     target: 'node24',

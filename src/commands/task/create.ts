@@ -1,4 +1,4 @@
-import commands from 'src/util/commands.js'
+import commands from '../../util/commands.js'
 import { z } from 'zod'
 
 export default commands.define(
