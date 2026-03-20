@@ -1,41 +1,49 @@
-import 'zod'
-import { parser } from 'zod-opts'
+import _ from 'lodash'
 import commandMap from './commands/index.js'
-import commands from './util/commands.js'
+import util from './util'
 
-async function main() {
-  const args = process.argv.slice(2)
+async function main(args: string[]) {
   const [noun, verb, ...rest] = args
 
   try {
-    if (!noun) {
-      console.error('Error: noun is required')
+    if (!noun || !util.isKeyOf(noun, commandMap)) {
       console.log('Usage: aip <noun> <verb> [options]')
-      console.log('Run with --help for more information')
+      console.log(dump().map(line => `-> ${line}`).join('\n'))
+      process.exit(1)
+    }
+    const verbs = commandMap[noun]
+    if (!verb || !util.isKeyOf(verb, verbs)) {
+      console.log(`Usage: aip ${dump(noun)[0]} [options]`)
       process.exit(1)
     }
 
-    if (!verb) {
-      console.error('Error: verb is required')
-      console.log('Usage: aip <noun> <verb> [options]')
-      console.log('Run with --help for more information')
-      process.exit(1)
-    }
-
-    const command = commandMap[noun as keyof typeof commandMap]?.[verb as keyof typeof commandMap[keyof typeof commandMap]]
-
+    const command = verbs[verb]
     if (!command) {
       console.error(`Error: unknown command '${noun} ${verb}'`)
       console.log('Run with --help for more information')
       process.exit(1)
     }
 
-    const parsed = parser().name(`${noun} ${verb}`).options(commands.schemaToOptions(command.schema)).parse(rest)
-    await command.handler(parsed as any)
-  } catch (error) {
-    console.error('Error:', error instanceof Error ? error.message : error)
+    await command.handler(command.parser.name(`${noun} ${verb}`).parse(rest))
+  } catch (err) {
+    console.error('Error:', util.errorMessage(err))
     process.exit(1)
   }
 }
 
-main()
+export default main
+
+function dump(noun?: string) {
+  const data = noun ? _.pick(commandMap, noun) : commandMap
+  const rows: string[] = []
+  for (const [noun, verbs] of util.entriesOf(data)) {
+    const vals = Object.keys(verbs!).join('|')
+    rows.push(`${noun} {${vals}}`)
+  }
+  return rows
+}
+
+// Run CLI if executed directly (not imported)
+if (util.isMain()) {
+  main(process.argv.slice(2))
+}

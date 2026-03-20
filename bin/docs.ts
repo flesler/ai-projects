@@ -5,8 +5,8 @@
  */
 
 import type { z } from 'zod'
+import commandMap from '../src/commands/index.js'
 import util from '../src/util/index.js'
-import commands from '../src/util/commands.js'
 
 /** Extract option information from a zod schema */
 const extractOptions = (schema: z.ZodObject<any>): Array<{ name: string; type: string; required: boolean; description?: string }> => {
@@ -80,33 +80,8 @@ const generateCommandDoc = (noun: string, verb: string, command: any): string =>
   return md
 }
 
-/** Generate noun-level command documentation */
-const generateNounDoc = async (noun: string, command: any): Promise<string> => {
-  let md = `### \`${noun}\`\n\n`
-  md += 'Shows available commands for this noun.\n\n'
-
-  if (command.schema) {
-    const options = extractOptions(command.schema)
-    if (options.length > 0) {
-      md += '| Option | Type | Required | Description |\n'
-      md += '|--------|------|----------|-------------|\n'
-
-      for (const opt of options) {
-        const required = opt.required ? 'Yes' : 'No'
-        const desc = opt.description || '-'
-        md += `| \`--${opt.name}\` | ${opt.type} | ${required} | ${desc} |\n`
-      }
-      md += '\n'
-    }
-  }
-
-  return md
-}
-
 /** Main documentation generator */
 const generateDocs = async () => {
-  const commandsMap = await commands.load()
-
   let md = '# AIP CLI Reference\n\n'
   md += 'AI Project Management CLI - Command reference documentation.\n\n'
   md += '## Usage\n\n'
@@ -116,21 +91,11 @@ const generateDocs = async () => {
   md += '## Commands\n\n'
 
   // Sort nouns alphabetically
-  const sortedNouns = Object.keys(commandsMap).sort()
+  const sortedNouns = Object.keys(commandMap).sort()
 
   for (const noun of sortedNouns) {
-    const nounCommands = commandsMap[noun]
+    const nounCommands = (commandMap as any)[noun]
     md += `## ${noun.charAt(0).toUpperCase() + noun.slice(1)}\n\n`
-
-    // Try to load noun-level command (index.ts)
-    try {
-      const nounModule = await import(`file://${process.cwd()}/src/commands/${noun}/index.ts`)
-      if (nounModule.default) {
-        md += await generateNounDoc(noun, nounModule.default)
-      }
-    } catch {
-      // No noun-level command, that's ok
-    }
 
     // Sort verbs alphabetically
     const sortedVerbs = Object.keys(nounCommands).sort()
@@ -142,10 +107,8 @@ const generateDocs = async () => {
   }
 
   // Ensure docs directory exists
-  util.ensureDir('docs')
-
   // Write to docs/aip.md
-  util.writeFile('docs/aip.md', md)
+  await util.write('docs/aip.md', md)
 
   console.log('Documentation generated: docs/aip.md')
 }

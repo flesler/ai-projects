@@ -17,6 +17,6 @@ const commands = {
     complete: taskComplete,
     create: taskCreate,
   },
-}
+} as const
 
 export default commands

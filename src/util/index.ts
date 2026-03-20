@@ -1,51 +1,57 @@
-/** File system utilities */
-
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'fs'
+import fs from 'fs/promises'
 import _ from 'lodash'
 import type { Duration, DurationInputObject, MomentInput } from 'moment'
 import moment from 'moment'
-import { dirname, join } from 'path'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import type { InspectOptions } from 'util'
 import { inspect as utilInspect } from 'util'
 
 const util = {
+  // Relative to the project root
+  REPO: path.resolve(fileURLToPath(import.meta.url), '../../../'),
+
+  onRepo: (...segments: string[]): string => {
+    return path.resolve(util.REPO, ...segments)
+  },
+
   /** Ensure directory exists */
-  ensureDir(dirPath: string): void {
-    if (!existsSync(dirPath)) {
-      mkdirSync(dirPath, { recursive: true })
-    }
+  async ensureDir(dirPath: string): Promise<void> {
+    await fs.mkdir(dirPath, { recursive: true })
   },
 
   /** Write file, creating parent directories if needed */
-  writeFile(filePath: string, content: string): void {
-    util.ensureDir(dirname(filePath))
-    writeFileSync(filePath, content, 'utf8')
+  async write(filePath: string, content: string): Promise<void> {
+    await util.ensureDir(path.dirname(filePath))
+    await fs.writeFile(filePath, content, 'utf8')
   },
 
   /** Read file */
-  readFile(filePath: string): string {
-    if (!existsSync(filePath)) {
-      throw new Error(`File not found: ${filePath}`)
-    }
-    return readFileSync(filePath, 'utf8')
+  async read(filePath: string): Promise<string> {
+    return fs.readFile(filePath, 'utf8')
+  },
+
+  async readRepo(filePath: string): Promise<string> {
+    return util.read(util.onRepo(filePath))
   },
 
   /** Check if file exists */
-  fileExists(filePath: string): boolean {
-    return existsSync(filePath)
+  async fileExists(filePath: string): Promise<boolean> {
+    try {
+      await fs.access(filePath)
+      return true
+    } catch {
+      return false
+    }
   },
 
   /** List directory contents */
-  listDir(dirPath: string): string[] {
-    if (!existsSync(dirPath)) {
+  async listDir(dirPath: string): Promise<string[]> {
+    try {
+      return await fs.readdir(dirPath)
+    } catch {
       return []
     }
-    return readdirSync(dirPath)
-  },
-
-  /** Join path segments safely */
-  joinPath(...segments: string[]): string {
-    return join(...segments)
   },
 
   /** Empty function */
@@ -258,6 +264,17 @@ const util = {
       console.error(err)
       process.exit(1)
     }
+  },
+
+  isMain: (): boolean => {
+    return process.argv[1]?.includes('/index.')
+  },
+
+  /** Converts '/path/to/project/src/util/errors.test.ts' to 'src/util/errors', used by vitest */
+  toModule: (filename: string): string => {
+    return path.relative(process.cwd(), filename)
+      // Remove .test.ts extension
+      .replace(/\.test\.[tj]s$/, '')
   },
 
   errorMessage: (err: unknown): string => {

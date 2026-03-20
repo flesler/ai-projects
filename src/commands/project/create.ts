@@ -1,8 +1,8 @@
 import { z } from 'zod'
-import commands from '../../util/commands.js'
+import defineCommand from '../../util/defineCommand'
 import util from '../../util/index.js'
 
-export default commands.define(
+export default defineCommand(
   z.object({
     name: z.string().describe('Project name'),
     description: z.string().describe('Project description'),

@@ -5,33 +5,32 @@
  */
 
 import fastGlob from 'fast-glob'
-import fs from 'fs'
 import _ from 'lodash'
-import path from 'path'
 import util from '../src/util/index.js'
 
-async function main() {
+util.run(async () => {
   // Find all command files (excluding test files and index.ts)
   const commandFiles = await fastGlob('src/commands/*/*.ts', {
     cwd: process.cwd(),
     ignore: ['**/*.test.ts', '**/index.ts'],
   })
+  commandFiles.sort()
 
-  // Group commands by noun and verb
+  // Group commands by noun and verb (extracted from file path)
   const commands: Record<string, Record<string, string>> = {}
 
-  await util.promiseMap(commandFiles, async (file) => {
+  for (const file of commandFiles) {
     // Split by forward slash since glob always returns forward slashes
     const parts = file.split('/')
-    const noun = parts[2] // src/commands/[noun]/[verb].ts
-    const verbFile = parts[3] // [verb].ts
-    const verb = verbFile.replace('.ts', '')
+    const commandsIndex = parts.findIndex(p => p === 'commands')
+    const noun = parts[commandsIndex + 1]
+    const verb = parts[commandsIndex + 2]?.replace('.ts', '')
 
     if (!commands[noun]) {
       commands[noun] = {}
     }
     commands[noun][verb] = file
-  })
+  }
 
   // Generate the index.ts file
   let output = `/** Auto-generated command map - DO NOT EDIT */\n\n`
@@ -67,19 +66,14 @@ async function main() {
     output += `  },\n`
   }
 
-  output += `}\n\n`
+  output += `} as const\n\n`
   output += `export default commands\n`
 
   // Write the generated file
-  const outputPath = path.join(process.cwd(), 'src/commands/index.ts')
-  const current = fs.readFileSync(outputPath, 'utf8')
+  const outputPath = util.onRepo('src/commands/index.ts')
+  const current = await util.readRepo(outputPath)
   if (current !== output) {
-    fs.writeFileSync(outputPath, output)
+    await util.write(outputPath, output)
     console.log(`Generated ${outputPath} with ${importIndex} command imports`)
   }
-}
-
-main().catch((error) => {
-  console.error('Error:', error)
-  process.exit(1)
 })
