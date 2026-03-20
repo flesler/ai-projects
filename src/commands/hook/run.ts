@@ -3,22 +3,12 @@ import defineCommand from '../../util/defineCommand.js'
 import hooks from '../../util/hooks.js'
 import env from '../../util/env.js'
 import path from 'path'
-
-const HOOK_TYPES = [
-  'pre-create',
-  'post-create',
-  'pre-complete',
-  'post-complete',
-  'pre-start',
-  'post-start',
-  'pre-update',
-  'post-update',
-] as const
+import config from '../../util/config.js'
 
 export default defineCommand(
   z.object({
-    type: z.enum(HOOK_TYPES).describe('Hook type to run'),
-    target: z.enum(['project', 'task']).optional().describe('Target level (default: auto-detect from $PWD)'),
+    type: z.enum(config.hookTypes).describe('Hook type to run'),
+    target: z.enum(config.targets).optional().describe('Target level (default: auto-detect from $PWD)'),
   }),
   async ({ type, target }) => {
     // Determine target directory
@@ -40,14 +30,14 @@ export default defineCommand(
         throw new Error('Not in a task directory')
       }
       projectDir = path.join(env.PROJECTS_HOME, context.project)
-      targetDir = path.join(projectDir, 'tasks', context.task)
+      targetDir = path.join(projectDir, config.dirs.TASKS, context.task)
       entityType = 'task'
     } else {
       // Auto-detect
       const context = env.getCurrentContext()
       if (context.task && context.project) {
         projectDir = path.join(env.PROJECTS_HOME, context.project)
-        targetDir = path.join(projectDir, 'tasks', context.task)
+        targetDir = path.join(projectDir, config.dirs.TASKS, context.task)
         entityType = 'task'
       } else if (context.project) {
         projectDir = path.join(env.PROJECTS_HOME, context.project)

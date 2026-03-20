@@ -3,25 +3,13 @@ import defineCommand from '../../util/defineCommand.js'
 import util from '../../util/index.js'
 import env from '../../util/env.js'
 import path from 'path'
-
-const HOOK_TYPES = [
-  'pre-create',
-  'post-create',
-  'pre-complete',
-  'post-complete',
-  'pre-start',
-  'post-start',
-  'pre-update',
-  'post-update',
-] as const
-
-const LANGUAGES = ['ts', 'js', 'sh', 'py'] as const
+import config from '../../util/config.js'
 
 export default defineCommand(
   z.object({
-    type: z.enum(HOOK_TYPES).describe('Hook type (e.g., pre-create, post-complete)'),
-    lang: z.enum(LANGUAGES).optional().describe('Language (default: ts)'),
-    target: z.enum(['project', 'task']).optional().describe('Target level (default: task if in task dir, else project)'),
+    type: z.enum(config.hookTypes).describe('Hook type (e.g., pre-create, post-complete)'),
+    lang: z.enum(config.languages).optional().describe('Language (default: ts)'),
+    target: z.enum(config.targets).optional().describe('Target level (default: task if in task dir, else project)'),
   }),
   async ({ type, lang, target }) => {
     const language = lang || 'ts'
@@ -43,13 +31,13 @@ export default defineCommand(
       if (!context.project || !context.task) {
         throw new Error('Not in a task directory. Use --project and --task flags or cd into a task.')
       }
-      targetDir = path.join(env.PROJECTS_HOME, context.project, 'tasks', context.task)
+      targetDir = path.join(env.PROJECTS_HOME, context.project, config.dirs.TASKS, context.task)
       actualTarget = 'task'
     } else {
       // Auto-detect
       const context = env.getCurrentContext()
       if (context.task && context.project) {
-        targetDir = path.join(env.PROJECTS_HOME, context.project, 'tasks', context.task)
+        targetDir = path.join(env.PROJECTS_HOME, context.project, config.dirs.TASKS, context.task)
         actualTarget = 'task'
       } else if (context.project) {
         targetDir = path.join(env.PROJECTS_HOME, context.project)

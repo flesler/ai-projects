@@ -3,17 +3,10 @@
 import { spawn } from 'child_process'
 import path from 'path'
 import util from './index.js'
+import config from './config.js'
 
-/** Hook types */
-export type HookType
-  = | 'pre-create'
-    | 'post-create'
-    | 'pre-complete'
-    | 'post-complete'
-    | 'pre-start'
-    | 'post-start'
-    | 'pre-update'
-    | 'post-update'
+/** Hook types - re-export from config for type safety */
+export type HookType = typeof config.hookTypes[number]
 
 /** Hook execution context */
 export interface HookContext {
@@ -24,13 +17,13 @@ export interface HookContext {
 }
 
 /** Supported hook extensions */
-const HOOK_EXTENSIONS = ['.ts', '.js', '.sh', '.py']
+const HOOK_EXTENSIONS = config.languages.map(lang => `.${lang}`)
 
 /**
  * Find all hooks of a given type in a directory
  */
 export const findHooks = async (directory: string, hookType: HookType): Promise<string[]> => {
-  const hooksDir = path.join(directory, 'hooks')
+  const hooksDir = path.join(directory, config.dirs.HOOKS)
   const exists = await util.fileExists(hooksDir)
   if (!exists) {
     return []
