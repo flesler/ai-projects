@@ -2,7 +2,6 @@ import { z } from 'zod'
 import defineCommand from '../../util/defineCommand.js'
 import util from '../../util/index.js'
 import env from '../../util/env.js'
-import path from 'path'
 import config from '../../util/config.js'
 
 export default defineCommand(
@@ -24,23 +23,23 @@ export default defineCommand(
       if (!project) {
         throw new Error('Not in a project directory. Use --project flag or cd into a project.')
       }
-      targetDir = path.join(env.PROJECTS_HOME, project)
+      targetDir = util.join(env.TEAM_HOME, 'projects', project)
       actualTarget = 'project'
     } else if (target === 'task') {
       const context = env.getCurrentContext()
       if (!context.project || !context.task) {
         throw new Error('Not in a task directory. Use --project and --task flags or cd into a task.')
       }
-      targetDir = path.join(env.PROJECTS_HOME, context.project, config.dirs.TASKS, context.task)
+      targetDir = util.join(env.TEAM_HOME, 'projects', context.project, config.dirs.TASKS, context.task)
       actualTarget = 'task'
     } else {
       // Auto-detect
       const context = env.getCurrentContext()
       if (context.task && context.project) {
-        targetDir = path.join(env.PROJECTS_HOME, context.project, config.dirs.TASKS, context.task)
+        targetDir = util.join(env.TEAM_HOME, 'projects', context.project, config.dirs.TASKS, context.task)
         actualTarget = 'task'
       } else if (context.project) {
-        targetDir = path.join(env.PROJECTS_HOME, context.project)
+        targetDir = util.join(env.TEAM_HOME, 'projects', context.project)
         actualTarget = 'project'
       } else {
         throw new Error('Not in a project or task directory. Specify --target flag.')
@@ -120,6 +119,9 @@ if os.environ.get('TASK_SLUG'):
     }
 
     await util.write(hookFile, template)
+
+    const { chmod } = await import('fs/promises')
+    await chmod(hookFile, 0o755)
 
     console.log(`Hook created: ${hookFile}`)
   },

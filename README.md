@@ -14,47 +14,10 @@ npm install -g aip
 aip <noun> <verb> [options]
 ```
 
-### Projects
+## For Agents
 
-```bash
-# Create a new project
-aip project create --name "Project Name" --description "Description"
-```
-
-### Tasks
-
-```bash
-# Create a new task in a project
-aip task create --project "project-name" --name "Task Name"
-
-# Mark a task as complete
-aip task complete --project "project-name" --task "task-name"
-```
-
-### Agents
-
-```bash
-# Create a new agent profile
-aip agent create --name "agent-name" --description "Agent description"
-```
-
-## Development
-
-```bash
-# Install dependencies
-npm install
-
-# Build
-npm run build
-
-# Watch mode
-npm run dev
-
-# Test
-npm test
-```
+Read `tmp/hermes/AGENTS.md` first.
 
 ## License
 
 MIT
-# Test change

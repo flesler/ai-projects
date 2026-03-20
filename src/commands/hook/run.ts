@@ -1,8 +1,8 @@
 import { z } from 'zod'
 import defineCommand from '../../util/defineCommand.js'
 import hooks from '../../util/hooks.js'
+import util from '../../util/index.js'
 import env from '../../util/env.js'
-import path from 'path'
 import config from '../../util/config.js'
 
 export default defineCommand(
@@ -21,7 +21,7 @@ export default defineCommand(
       if (!project) {
         throw new Error('Not in a project directory')
       }
-      projectDir = path.join(env.PROJECTS_HOME, project)
+      projectDir = util.join(env.TEAM_HOME, 'projects', project)
       targetDir = projectDir
       entityType = 'project'
     } else if (target === 'task') {
@@ -29,18 +29,18 @@ export default defineCommand(
       if (!context.project || !context.task) {
         throw new Error('Not in a task directory')
       }
-      projectDir = path.join(env.PROJECTS_HOME, context.project)
-      targetDir = path.join(projectDir, config.dirs.TASKS, context.task)
+      projectDir = util.join(env.TEAM_HOME, 'projects', context.project)
+      targetDir = util.join(projectDir, config.dirs.TASKS, context.task)
       entityType = 'task'
     } else {
       // Auto-detect
       const context = env.getCurrentContext()
       if (context.task && context.project) {
-        projectDir = path.join(env.PROJECTS_HOME, context.project)
-        targetDir = path.join(projectDir, config.dirs.TASKS, context.task)
+        projectDir = util.join(env.TEAM_HOME, 'projects', context.project)
+        targetDir = util.join(projectDir, config.dirs.TASKS, context.task)
         entityType = 'task'
       } else if (context.project) {
-        projectDir = path.join(env.PROJECTS_HOME, context.project)
+        projectDir = util.join(env.TEAM_HOME, 'projects', context.project)
         targetDir = projectDir
         entityType = 'project'
       } else {

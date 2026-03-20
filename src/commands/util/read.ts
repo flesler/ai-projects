@@ -1,18 +1,13 @@
 import { z } from 'zod'
 import defineCommand from '../../util/defineCommand.js'
-import util from '../../util/index.js'
+import projects from '../../util/projects.js'
 
 export default defineCommand(
   z.object({
-    file: z.string().describe('File to read'),
+    files: z.array(z.string()).describe('Files to read (aggregated)'),
   }),
-  async ({ file }) => {
-    const exists = await util.fileExists(file)
-    if (!exists) {
-      throw new Error(`File not found: ${file}`)
-    }
-
-    const content = await util.read(file)
+  async ({ files }) => {
+    const content = await projects.ingestFiles(files)
     console.log(content)
   },
 )

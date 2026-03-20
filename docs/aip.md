@@ -28,27 +28,6 @@ No options.
 
 No options.
 
-## Context
-
-### `context files`
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `--files` | unknown | Yes | Files to read |
-
-### `context project`
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `--project` | string | Yes | Project slug |
-
-### `context task`
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `--project` | string | Yes | Project slug |
-| `--task` | string | Yes | Task slug |
-
 ## Hook
 
 ### `hook create`
@@ -131,8 +110,8 @@ No options.
 
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
-| `--project` | string | Yes | Project slug |
-| `--task` | string | Yes | Task slug |
+| `--project` | string | No | Project slug (default: from $PWD) |
+| `--task` | string | No | Task slug (default: from $PWD) |
 
 ### `task list`
 
@@ -176,7 +155,7 @@ No options.
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
 | `--pattern` | string | Yes | Glob pattern to search for |
-| `--cwd` | string | No | Working directory (defaults to PROJECTS_HOME) |
+| `--cwd` | string | No | Working directory (defaults to TEAM_HOME/projects) |
 | `--absolute` | boolean | No | Return absolute paths |
 
 ### `util inspect`
@@ -228,7 +207,7 @@ No options.
 
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
-| `--file` | string | Yes | File to read |
+| `--files` | unknown | Yes | Files to read (aggregated) |
 
 ### `util relative`
 

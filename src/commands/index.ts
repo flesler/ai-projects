@@ -3,9 +3,6 @@
 import agentCreate from './agent/create.js'
 import agentCurrent from './agent/current.js'
 import agentList from './agent/list.js'
-import contextFiles from './context/files.js'
-import contextProject from './context/project.js'
-import contextTask from './context/task.js'
 import hookCreate from './hook/create.js'
 import hookRun from './hook/run.js'
 import projectCreate from './project/create.js'
@@ -40,11 +37,6 @@ const commands = {
     create: agentCreate,
     current: agentCurrent,
     list: agentList,
-  },
-  context: {
-    files: contextFiles,
-    project: contextProject,
-    task: contextTask,
   },
   hook: {
     create: hookCreate,

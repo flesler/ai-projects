@@ -4,6 +4,7 @@ import { spawn } from 'child_process'
 import path from 'path'
 import util from './index.js'
 import config from './config.js'
+import env from './env.js'
 
 /** Hook types - re-export from config for type safety */
 export type HookType = typeof config.hookTypes[number]
@@ -16,88 +17,70 @@ export interface HookContext {
   entityType: 'project' | 'task'
 }
 
-/** Supported hook extensions */
-const HOOK_EXTENSIONS = config.languages.map(lang => `.${lang}`)
-
 /**
- * Find all hooks of a given type in a directory
+ * Find all hooks of a given type in a directory.
+ * Extension-agnostic: matches hookType.* (e.g. post-complete.ts, post-complete.sh).
+ * Shebang in the file determines how it runs.
  */
 export const findHooks = async (directory: string, hookType: HookType): Promise<string[]> => {
-  const hooksDir = path.join(directory, config.dirs.HOOKS)
+  const hooksDir = util.join(directory, config.dirs.HOOKS)
   const exists = await util.fileExists(hooksDir)
   if (!exists) {
     return []
   }
 
   const files = await util.listDir(hooksDir)
-  const hooks: string[] = []
-
-  for (const file of files) {
-    const baseName = path.basename(file)
-    for (const ext of HOOK_EXTENSIONS) {
-      if (baseName === `${hookType}${ext}`) {
-        hooks.push(path.join(hooksDir, file))
-      }
-    }
-  }
-
-  return hooks
+  const prefix = `${hookType}.`
+  return files
+    .filter(f => f.startsWith(prefix))
+    .map(f => util.join(hooksDir, f))
 }
 
 /**
- * Execute a hook script
- * Returns true if successful, false if failed
+ * Execute a hook script.
+ * Extension-agnostic: runs the file directly, shebang handles interpreter.
+ * Env: PROJECT_SLUG, TASK_SLUG, TARGET_DIR, PROJECT_DIR, TASK_DIR (when applicable), HOOK_TYPE, ENTITY_TYPE.
  */
-export const executeHook = async (hookPath: string, context: HookContext): Promise<boolean> => {
+export const executeHook = async (
+  hookPath: string,
+  context: HookContext,
+  targetDir: string,
+): Promise<boolean> => {
   const exists = await util.fileExists(hookPath)
   if (!exists) {
     return true
   }
 
-  // Set up environment for hook
-  const env = {
+  const projectDir = context.project
+    ? util.join(env.TEAM_HOME, 'projects', context.project)
+    : targetDir
+  const taskDir = context.task
+    ? util.join(projectDir, config.dirs.TASKS, context.task)
+    : ''
+
+  const hookEnv = {
     ...process.env,
     HOOK_TYPE: context.action,
     ENTITY_TYPE: context.entityType,
+    TARGET_DIR: targetDir,
+    PROJECT_DIR: projectDir,
     ...(context.project ? { PROJECT_SLUG: context.project } : {}),
-    ...(context.task ? { TASK_SLUG: context.task } : {}),
+    ...(context.task ? { TASK_SLUG: context.task, TASK_DIR: taskDir } : {}),
   }
 
   return new Promise((resolve) => {
-    const ext = path.extname(hookPath)
-    let command: string
-    let args: string[]
-
-    // Determine how to execute based on extension
-    if (ext === '.ts') {
-      command = 'tsx'
-      args = [hookPath]
-    } else if (ext === '.js') {
-      command = 'node'
-      args = [hookPath]
-    } else if (ext === '.sh') {
-      command = 'bash'
-      args = [hookPath]
-    } else if (ext === '.py') {
-      command = 'python3'
-      args = [hookPath]
-    } else {
-      console.error(`Unknown hook extension: ${ext}`)
-      resolve(false)
-      return
-    }
-
-    const proc = spawn(command, args, {
+    const proc = spawn(hookPath, [], {
       stdio: 'inherit',
-      env,
+      env: hookEnv,
       cwd: path.dirname(hookPath),
+      shell: false,
     })
 
-    proc.on('close', (code) => {
+    proc.on('close', (code, signal) => {
       if (code === 0) {
         resolve(true)
       } else {
-        console.error(`Hook ${hookPath} failed with exit code ${code}`)
+        console.error(`Hook ${path.basename(hookPath)} failed (code=${code ?? signal})`)
         resolve(false)
       }
     })
@@ -123,7 +106,7 @@ export const runHooks = async (
   const isPreHook = hookType.startsWith('pre-')
 
   for (const hook of hooks) {
-    const success = await executeHook(hook, context)
+    const success = await executeHook(hook, context, directory)
     if (!success && isPreHook) {
       // Pre-hook failed, prevent action
       return false

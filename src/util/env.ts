@@ -3,6 +3,7 @@
 import dotenv from 'dotenv'
 import fs from 'fs'
 import path from 'path'
+import util from './index.js'
 import { fileURLToPath } from 'url'
 
 /**
@@ -17,7 +18,7 @@ const findRoot = (): string => {
   const maxDepth = 10
   for (let i = 0; i < maxDepth; i++) {
     try {
-      const hasPackageJson = fs.existsSync(path.join(currentDir, 'package.json'))
+      const hasPackageJson = fs.existsSync(util.join(currentDir, 'package.json'))
       if (hasPackageJson) {
         return currentDir
       }
@@ -40,18 +41,18 @@ const findRoot = (): string => {
 const ROOT = findRoot()
 
 // Load .env from root (silently, no tips)
-dotenv.config({ path: path.join(ROOT, '.env'), quiet: true })
+dotenv.config({ path: util.join(ROOT, '.env'), quiet: true })
 
-const defaultHome = path.join(ROOT, 'tmp', 'hermes')
+const defaultTeamHome = util.join(ROOT, 'tmp', 'hermes')
 
-/** Configuration from environment */
+/** Configuration from environment. TEAM_HOME = base (tmp/hermes), projects live in TEAM_HOME/projects/ */
 export const config = {
   ROOT,
-  PROJECTS_HOME: process.env.PROJECTS_HOME
-    ? path.isAbsolute(process.env.PROJECTS_HOME)
-      ? process.env.PROJECTS_HOME
-      : path.join(ROOT, process.env.PROJECTS_HOME)
-    : defaultHome,
+  TEAM_HOME: process.env.TEAM_HOME
+    ? path.isAbsolute(process.env.TEAM_HOME)
+      ? process.env.TEAM_HOME
+      : util.join(ROOT, process.env.TEAM_HOME)
+    : defaultTeamHome,
   NODE_ENV: process.env.NODE_ENV ?? 'development',
 } as const
 
@@ -59,10 +60,10 @@ export const config = {
  * Infer project slug from current working directory
  * Returns null if not in a project directory
  */
+const projectsDir = util.join(config.TEAM_HOME, 'projects')
+
 export const getProjectFromPwd = (pwd: string = process.cwd()): string | null => {
-  // Expected structure: PROJECTS_HOME/{project-slug}/tasks/{task-slug}
-  // or PROJECTS_HOME/{project-slug}/
-  const relative = path.relative(config.PROJECTS_HOME, pwd)
+  const relative = path.relative(projectsDir, pwd)
   if (!relative || relative.startsWith('..')) {
     return null
   }
@@ -81,7 +82,7 @@ export const getProjectFromPwd = (pwd: string = process.cwd()): string | null =>
  * Returns null if not in a task directory
  */
 export const getTaskFromPwd = (pwd: string = process.cwd()): string | null => {
-  const relative = path.relative(config.PROJECTS_HOME, pwd)
+  const relative = path.relative(projectsDir, pwd)
   if (!relative || relative.startsWith('..')) {
     return null
   }
@@ -115,7 +116,7 @@ export const getCurrentContext = (pwd: string = process.cwd()): {
 export const requireProject = (pwd: string = process.cwd()): string => {
   const project = getProjectFromPwd(pwd)
   if (!project) {
-    throw new Error(`Not in a project directory. PWD: ${pwd}, PROJECTS_HOME: ${config.PROJECTS_HOME}`)
+    throw new Error(`Not in a project directory. PWD: ${pwd}, projects: ${projectsDir}`)
   }
   return project
 }

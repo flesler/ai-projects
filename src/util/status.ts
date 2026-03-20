@@ -2,7 +2,6 @@
 
 import util from './index.js'
 import env from './env.js'
-import path from 'path'
 
 /**
  * Standardized log format: timestamp | agent | text
@@ -67,7 +66,7 @@ export const logTask = async (text: string, agent?: string): Promise<void> => {
   if (!context.project || !context.task) {
     throw new Error('Not in a task directory')
   }
-  const taskDir = path.join(env.PROJECTS_HOME, context.project, 'tasks', context.task)
+  const taskDir = util.join(env.TEAM_HOME, 'projects', context.project, 'tasks', context.task)
   await appendStatus(taskDir, text, agent || getCurrentAgent())
 }
 
@@ -79,7 +78,7 @@ export const logProject = async (text: string, agent?: string): Promise<void> =>
   if (!project) {
     throw new Error('Not in a project directory')
   }
-  const projectDir = path.join(env.PROJECTS_HOME, project)
+  const projectDir = util.join(env.TEAM_HOME, 'projects', project)
   await appendStatus(projectDir, text, agent || getCurrentAgent())
 }
 

@@ -1,3 +1,4 @@
+import { spawn as cpSpawn, exec as cpExec } from 'child_process'
 import fs from 'fs/promises'
 import _ from 'lodash'
 import type { Duration, DurationInputObject, MomentInput } from 'moment'
@@ -56,6 +57,37 @@ const util = {
     } catch {
       return []
     }
+  },
+
+  /** Spawn process: util.spawn(cmd, args, opts?). Returns { stdout, stderr, code }. */
+  async spawn(cmd: string, args: string[] = [], opts?: { cwd?: string; env?: NodeJS.ProcessEnv }): Promise<{ stdout: string; stderr: string; code: number | null }> {
+    return new Promise((resolve, reject) => {
+      const proc = cpSpawn(cmd, args, {
+        stdio: ['ignore', 'pipe', 'pipe'],
+        ...opts,
+      })
+      let stdout = ''
+      let stderr = ''
+      proc.stdout?.on('data', (chunk) => {
+        stdout += chunk
+      })
+      proc.stderr?.on('data', (chunk) => {
+        stderr += chunk
+      })
+      proc.on('close', code => resolve({ stdout, stderr, code }))
+      proc.on('error', reject)
+    })
+  },
+
+  /** Exec command string (shell). Returns { stdout, stderr, code }. */
+  async exec(command: string, opts?: { cwd?: string; env?: NodeJS.ProcessEnv }): Promise<{ stdout: string; stderr: string; code: number }> {
+    return new Promise((resolve) => {
+      cpExec(command, { encoding: 'utf8', ...opts }, (err, stdout, stderr) => {
+        const c = (err as NodeJS.ErrnoException)?.code
+        const code = err ? (typeof c === 'number' ? c : 1) : 0
+        resolve({ stdout: stdout ?? '', stderr: stderr ?? '', code })
+      })
+    })
   },
 
   /** Empty function */
