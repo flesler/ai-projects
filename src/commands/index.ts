@@ -25,6 +25,7 @@ import utilGlob from './util/glob.js'
 import utilInspect from './util/inspect.js'
 import utilIso from './util/iso.js'
 import utilJoin from './util/join.js'
+import utilLog from './util/log.js'
 import utilLs from './util/ls.js'
 import utilOneline from './util/oneline.js'
 import utilPostmortem from './util/postmortem.js'
@@ -71,6 +72,7 @@ const commands = {
     inspect: utilInspect,
     iso: utilIso,
     join: utilJoin,
+    log: utilLog,
     ls: utilLs,
     oneline: utilOneline,
     postmortem: utilPostmortem,

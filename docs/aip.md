@@ -198,6 +198,13 @@ No options.
 |--------|------|----------|-------------|
 | `--paths` | unknown | Yes | Path segments to join |
 
+### `util log`
+
+| Option | Type | Required | Description |
+|--------|------|----------|-------------|
+| `--text` | string | Yes | Log message |
+| `--agent` | string | No | Agent name (defaults to $CURRENT_AGENT) |
+
 ### `util ls`
 
 | Option | Type | Required | Description |

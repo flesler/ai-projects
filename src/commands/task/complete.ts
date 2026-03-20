@@ -31,7 +31,7 @@ export default defineCommand(
 
     // Update status to done
     await projects.updateTask(project, task, { status: 'done' })
-    await status.appendStatus(taskDir, 'Task completed')
+    await status.appendStatus(taskDir, 'Task completed', process.env.CURRENT_AGENT)
 
     // Run post-complete hooks
     await hooks.runHooksForContext(

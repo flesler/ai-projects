@@ -34,7 +34,7 @@ export default defineCommand(
     const currentMeta = await projects.getTask(project, task)
     if (currentMeta?.status !== 'in-progress') {
       await projects.updateTask(project, task, { status: 'in-progress' })
-      await status.appendStatus(taskDir, 'Status changed to: in-progress')
+      await status.appendStatus(taskDir, 'Status changed to: in-progress', process.env.CURRENT_AGENT)
     }
 
     // Run post-start hooks
