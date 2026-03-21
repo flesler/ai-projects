@@ -157,6 +157,52 @@ export const exportContext = (pwd: string = process.cwd()): string => {
   return lines.join('\n')
 }
 
+/**
+ * Get target directory for hooks based on current context or explicit target
+ */
+export const getTargetDir = (
+  target?: 'project' | 'task',
+  pwd: string = process.cwd(),
+): {
+  targetDir: string
+  projectDir: string
+  entityType: 'project' | 'task'
+} => {
+  const context = getCurrentContext(pwd)
+
+  if (target === 'project') {
+    const project = getProjectFromPwd(pwd)
+    if (!project) {
+      throw new Error('Not in a project directory. Use --project flag or cd into a project.')
+    }
+    const projectDir = util.join(config.TEAM_HOME, 'projects', project)
+    return { targetDir: projectDir, projectDir, entityType: 'project' }
+  }
+
+  if (target === 'task') {
+    if (!context.project || !context.task) {
+      throw new Error('Not in a task directory. Use --project and --task flags or cd into a task.')
+    }
+    const projectDir = util.join(config.TEAM_HOME, 'projects', context.project)
+    const targetDir = util.join(projectDir, 'tasks', context.task)
+    return { targetDir, projectDir, entityType: 'task' }
+  }
+
+  // Auto-detect
+  if (context.task && context.project) {
+    const projectDir = util.join(config.TEAM_HOME, 'projects', context.project)
+    const targetDir = util.join(projectDir, 'tasks', context.task)
+    return { targetDir, projectDir, entityType: 'task' }
+  }
+
+  if (context.project) {
+    const projectDir = util.join(config.TEAM_HOME, 'projects', context.project)
+    return { targetDir: projectDir, projectDir, entityType: 'project' }
+  }
+
+  throw new Error('Not in a project or task directory. Specify --target flag.')
+}
+
 export default {
   ...config,
   getProjectFromPwd,
@@ -165,4 +211,5 @@ export default {
   requireProject,
   requireTask,
   exportContext,
+  getTargetDir,
 }

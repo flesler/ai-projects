@@ -2,9 +2,9 @@ import { z } from 'zod'
 import defineCommand from '../../util/defineCommand.js'
 import projects from '../../util/projects.js'
 
-export default defineCommand(
-  z.object({}),
-  async () => {
+export default defineCommand({
+  options: z.object({}),
+  handler: async () => {
     const allAgents = await projects.listAgents()
     const rows: Array<{ slug: string; name: string; status?: string; description?: string }> = []
 
@@ -32,4 +32,4 @@ export default defineCommand(
       console.log(`${row.slug.padEnd(20)} ${row.name?.padEnd(30) || ''} ${row.status || ''} ${row.description || ''}`)
     }
   },
-)
+})

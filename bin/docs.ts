@@ -59,17 +59,28 @@ const extractType = (zodType: any): string => {
 
 /** Generate markdown documentation for a command */
 const generateCommandDoc = (noun: string, verb: string, command: any): string => {
-  const options = extractOptions(command.schema)
+  const opts = extractOptions(command.options)
+  const args = command.args ? extractOptions(command.args) : []
+  const schemaDescription = command.description
 
   let md = `### \`${noun} ${verb}\`\n\n`
 
-  if (options.length === 0) {
+  if (schemaDescription) {
+    md += `${schemaDescription}\n\n`
+  }
+
+  const allOptions = opts.length > 0 || args.length > 0
+  if (!allOptions) {
     md += 'No options.\n\n'
   } else {
     md += '| Option | Type | Required | Description |\n'
     md += '|--------|------|----------|-------------|\n'
-
-    for (const opt of options) {
+    for (const opt of args) {
+      const required = opt.required ? 'Yes' : 'No'
+      const desc = opt.description || '-'
+      md += `| \`${opt.name}\` (positional) | ${opt.type} | ${required} | ${desc} |\n`
+    }
+    for (const opt of opts) {
       const required = opt.required ? 'Yes' : 'No'
       const desc = opt.description || '-'
       md += `| \`--${opt.name}\` | ${opt.type} | ${required} | ${desc} |\n`

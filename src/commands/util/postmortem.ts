@@ -3,12 +3,14 @@ import defineCommand from '../../util/defineCommand.js'
 import projects from '../../util/projects.js'
 import status from '../../util/status.js'
 
-export default defineCommand(
-  z.object({
+export default defineCommand({
+  description: 'Post-mortem analysis for a completed task',
+  options: z.object({}),
+  args: z.object({
     project: z.string().describe('Project slug'),
     task: z.string().describe('Task slug'),
   }),
-  async ({ project, task }) => {
+  handler: async ({ project, task }) => {
     const taskDir = projects.getTaskDir(project, task)
 
     // Read task metadata
@@ -52,4 +54,4 @@ export default defineCommand(
 
     console.log(`\n=== End Post-Mortem ===\n`)
   },
-)
+})

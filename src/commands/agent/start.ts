@@ -1,0 +1,29 @@
+import { z } from 'zod'
+import config from '../../util/config'
+import defineCommand from '../../util/defineCommand.js'
+import env from '../../util/env.js'
+import util from '../../util/index.js'
+
+export default defineCommand({
+  description: 'Start an agent: read AGENTS.md and export CURRENT_AGENT env var',
+  options: z.object({}),
+  args: z.object({ name: z.string().describe('Agent name (directory name)') }),
+  handler: async ({ name }) => {
+    // Look for agent in tmp/hermes/agents/
+    const agentDir = util.join(env.TEAM_HOME, config.dirs.AGENTS, name)
+    const agentFile = util.join(agentDir, 'AGENTS.md')
+
+    const exists = await util.fileExists(agentFile)
+    if (!exists) {
+      throw new Error(`Agent not found: ${name}\nExpected at: ${agentFile}`)
+    }
+
+    // Output environment export
+    console.log(`export CURRENT_AGENT="${name}"`)
+
+    // Output cat command for agent context
+    console.log(`# AGENT_CONTEXT_START`)
+    console.log(`cat "${agentFile}"`)
+    console.log(`# AGENT_CONTEXT_END`)
+  },
+})

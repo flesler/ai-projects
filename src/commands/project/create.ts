@@ -5,14 +5,15 @@ import projects from '../../util/projects.js'
 import hooks from '../../util/hooks.js'
 import status from '../../util/status.js'
 
-export default defineCommand(
-  z.object({
+export default defineCommand({
+  description: 'Create a new project with name, description, optional status and assignee',
+  options: z.object({
     name: z.string().describe('Project name'),
     description: z.string().describe('Project description'),
     status: z.string().optional().describe('Initial status (default: active)'),
     assignee: z.string().optional().describe('Assignee agent slug'),
   }),
-  async ({ name, description, status: initialStatus, assignee }) => {
+  handler: async ({ name, description, status: initialStatus, assignee }) => {
     const slug = util.slugify(name)
 
     // Run pre-create hooks
@@ -47,4 +48,4 @@ export default defineCommand(
     console.log(`Project created: ${slug}`)
     console.log(`  Path: ${projectDir}`)
   },
-)
+})

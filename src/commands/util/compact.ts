@@ -2,11 +2,11 @@ import { z } from 'zod'
 import defineCommand from '../../util/defineCommand.js'
 import util from '../../util/index.js'
 
-export default defineCommand(
-  z.object({
+export default defineCommand({
+  options: z.object({
     text: z.string().optional().describe('Text to compact (reads from stdin if not provided)'),
   }),
-  async ({ text }) => {
+  handler: async ({ text }) => {
     let inputText = text
 
     // Read from stdin if text not provided
@@ -24,4 +24,4 @@ export default defineCommand(
     const compacted = util.compactWhitespace(inputText)
     console.log(compacted)
   },
-)
+})

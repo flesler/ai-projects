@@ -3,13 +3,14 @@ import defineCommand from '../../util/defineCommand.js'
 import projects from '../../util/projects.js'
 import env from '../../util/env.js'
 
-export default defineCommand(
-  z.object({
+export default defineCommand({
+  description: 'List tasks in a project, optionally filtered by status or assignee',
+  options: z.object({
     project: z.string().optional().describe('Project slug (defaults to current project from $PWD)'),
     status: z.string().optional().describe('Filter by status'),
     assignee: z.string().optional().describe('Filter by assignee'),
   }),
-  async ({ project, status, assignee }) => {
+  handler: async ({ project, status, assignee }) => {
     // Use current project from PWD if not specified
     const projectSlug = project || env.getProjectFromPwd()
     if (!projectSlug) {
@@ -47,4 +48,4 @@ export default defineCommand(
       console.log(`${row.slug.padEnd(20)} ${row.name?.padEnd(30) || ''} ${row.status || ''} ${row.assignee || ''} ${row.priority || ''}`)
     }
   },
-)
+})

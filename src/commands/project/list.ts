@@ -2,11 +2,12 @@ import { z } from 'zod'
 import defineCommand from '../../util/defineCommand.js'
 import projects from '../../util/projects.js'
 
-export default defineCommand(
-  z.object({
+export default defineCommand({
+  description: 'List all projects, optionally filtered by status',
+  options: z.object({
     status: z.string().optional().describe('Filter by status'),
   }),
-  async ({ status }) => {
+  handler: async ({ status }) => {
     const allProjects = await projects.listProjects()
     const rows: Array<{ slug: string; name: string; status?: string; assignee?: string }> = []
 
@@ -36,4 +37,4 @@ export default defineCommand(
       console.log(`${row.slug.padEnd(20)} ${row.name?.padEnd(30) || ''} ${row.status || ''} ${row.assignee || ''}`)
     }
   },
-)
+})

@@ -3,14 +3,14 @@
 import agentCreate from './agent/create.js'
 import agentCurrent from './agent/current.js'
 import agentList from './agent/list.js'
+import agentStart from './agent/start.js'
 import hookCreate from './hook/create.js'
 import hookRun from './hook/run.js'
 import projectCreate from './project/create.js'
 import projectCurrent from './project/current.js'
-import projectIngest from './project/ingest.js'
 import projectList from './project/list.js'
 import projectUpdate from './project/update.js'
-import taskComplete from './task/complete.js'
+import skillRead from './skill/read.js'
 import taskCreate from './task/create.js'
 import taskCurrent from './task/current.js'
 import taskIngest from './task/ingest.js'
@@ -37,6 +37,7 @@ const commands = {
     create: agentCreate,
     current: agentCurrent,
     list: agentList,
+    start: agentStart,
   },
   hook: {
     create: hookCreate,
@@ -45,12 +46,13 @@ const commands = {
   project: {
     create: projectCreate,
     current: projectCurrent,
-    ingest: projectIngest,
     list: projectList,
     update: projectUpdate,
   },
+  skill: {
+    read: skillRead,
+  },
   task: {
-    complete: taskComplete,
     create: taskCreate,
     current: taskCurrent,
     ingest: taskIngest,

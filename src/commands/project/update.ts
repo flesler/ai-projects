@@ -5,8 +5,9 @@ import hooks from '../../util/hooks.js'
 import status from '../../util/status.js'
 import env from '../../util/env.js'
 
-export default defineCommand(
-  z.object({
+export default defineCommand({
+  description: 'Update project properties: name, description, status, assignee, or append summary',
+  options: z.object({
     project: z.string().optional().describe('Project slug (defaults to current project from $PWD)'),
     name: z.string().optional().describe('New name'),
     description: z.string().optional().describe('New description'),
@@ -14,7 +15,7 @@ export default defineCommand(
     assignee: z.string().optional().describe('New assignee'),
     summary: z.string().optional().describe('Optional summary to append to status.md'),
   }),
-  async ({ project, name, description, status: newStatus, assignee, summary }) => {
+  handler: async ({ project, name, description, status: newStatus, assignee, summary }) => {
     // Use current project from PWD if not specified
     const projectSlug = project || env.getProjectFromPwd()
     if (!projectSlug) {
@@ -67,4 +68,4 @@ export default defineCommand(
 
     console.log(`Project ${projectSlug} updated`)
   },
-)
+})

@@ -2,12 +2,12 @@ import { z } from 'zod'
 import defineCommand from '../../util/defineCommand.js'
 import util from '../../util/index.js'
 
-export default defineCommand(
-  z.object({
+export default defineCommand({
+  options: z.object({
     json: z.string().describe('JSON string to inspect/format'),
     compact: z.boolean().optional().describe('Output as single line (default: false)'),
   }),
-  async ({ json, compact }) => {
+  handler: async ({ json, compact }) => {
     try {
       const obj = JSON.parse(json)
       if (compact) {
@@ -19,4 +19,4 @@ export default defineCommand(
       throw new Error(`Invalid JSON: ${util.errorMessage(err)}`, { cause: err })
     }
   },
-)
+})

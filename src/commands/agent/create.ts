@@ -3,13 +3,13 @@ import defineCommand from '../../util/defineCommand.js'
 import util from '../../util/index.js'
 import projects from '../../util/projects.js'
 
-export default defineCommand(
-  z.object({
+export default defineCommand({
+  options: z.object({
     name: z.string().describe('Agent name'),
     description: z.string().describe('Agent description'),
     status: z.string().optional().describe('Initial status (default: active)'),
   }),
-  async ({ name, description, status: initialStatus }) => {
+  handler: async ({ name, description, status: initialStatus }) => {
     const slug = util.slugify(name)
 
     // Create agent
@@ -23,4 +23,4 @@ export default defineCommand(
     console.log(`Agent created: ${slug}`)
     console.log(`  Path: ${projects.getAgentDir(slug)}`)
   },
-)
+})

@@ -28,13 +28,21 @@ No options.
 
 No options.
 
+### `agent start`
+
+Start an agent: read AGENTS.md and export CURRENT_AGENT env var
+
+| Option | Type | Required | Description |
+|--------|------|----------|-------------|
+| `name` (positional) | string | Yes | Agent name (directory name) |
+
 ## Hook
 
 ### `hook create`
 
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
-| `--type` | enum: pre-create | post-create | pre-complete | post-complete | pre-start | post-start | pre-update | post-update | Yes | Hook type (e.g., pre-create, post-complete) |
+| `type` (positional) | enum: pre-create | post-create | pre-complete | post-complete | pre-start | post-start | pre-update | post-update | Yes | Hook type (e.g., pre-create, post-complete) |
 | `--lang` | enum: ts | js | sh | py | No | Language (default: ts) |
 | `--target` | enum: project | task | No | Target level (default: task if in task dir, else project) |
 
@@ -42,12 +50,14 @@ No options.
 
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
-| `--type` | enum: pre-create | post-create | pre-complete | post-complete | pre-start | post-start | pre-update | post-update | Yes | Hook type to run |
+| `type` (positional) | enum: pre-create | post-create | pre-complete | post-complete | pre-start | post-start | pre-update | post-update | Yes | Hook type to run |
 | `--target` | enum: project | task | No | Target level (default: auto-detect from $PWD) |
 
 ## Project
 
 ### `project create`
+
+Create a new project with name, description, optional status and assignee
 
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
@@ -60,19 +70,17 @@ No options.
 
 No options.
 
-### `project ingest`
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `--project` | string | No | Project slug (defaults to current project from $PWD) |
-
 ### `project list`
+
+List all projects, optionally filtered by status
 
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
 | `--status` | string | No | Filter by status |
 
 ### `project update`
+
+Update project properties: name, description, status, assignee, or append summary
 
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
@@ -83,30 +91,40 @@ No options.
 | `--assignee` | string | No | New assignee |
 | `--summary` | string | No | Optional summary to append to status.md |
 
-## Task
+## Skill
 
-### `task complete`
+### `skill read`
+
+Read a skill's SKILL.md file into the console for agent context
 
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
-| `--project` | string | Yes | Project slug |
-| `--task` | string | Yes | Task slug |
+| `name` (positional) | string | Yes | Skill name (directory name) |
+
+## Task
 
 ### `task create`
 
+Create a new task with optional priority, assignee, and initial status
+
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
-| `--project` | string | Yes | Project slug |
-| `--name` | string | Yes | Task name |
+| `project` (positional) | string | Yes | Project slug |
+| `name` (positional) | string | Yes | Task name |
 | `--description` | string | No | Task description |
 | `--priority` | enum: low | medium | high | No | Task priority |
 | `--assignee` | string | No | Assignee agent slug |
+| `--status` | enum: pending | in-progress | ongoing | done | No | Initial status |
 
 ### `task current`
+
+Get the current task slug from PWD
 
 No options.
 
 ### `task ingest`
+
+Output full task context (main.md, status.md) for ingestion by agents
 
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
@@ -114,6 +132,8 @@ No options.
 | `--task` | string | No | Task slug (default: from $PWD) |
 
 ### `task list`
+
+List tasks in a project, optionally filtered by status or assignee
 
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
@@ -123,13 +143,17 @@ No options.
 
 ### `task start`
 
+Start a task: set status to in-progress, output cd and env vars, optionally print context
+
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
-| `--project` | string | Yes | Project slug |
-| `--task` | string | Yes | Task slug |
+| `project` (positional) | string | Yes | Project slug |
+| `task` (positional) | string | Yes | Task slug |
 | `--ingest` | boolean | No | Also output context ingestion for this task |
 
 ### `task update`
+
+Update task properties: name, description, status, priority, assignee, or append summary
 
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
@@ -137,7 +161,7 @@ No options.
 | `--task` | string | No | Task slug (defaults to current task from $PWD) |
 | `--name` | string | No | New name |
 | `--description` | string | No | New description |
-| `--status` | string | No | New status |
+| `--status` | enum: pending | in-progress | ongoing | done | blocked | No | New status |
 | `--priority` | enum: low | medium | high | No | New priority |
 | `--assignee` | string | No | New assignee |
 | `--summary` | string | No | Optional summary to append to status.md |
@@ -198,10 +222,12 @@ No options.
 
 ### `util postmortem`
 
+Post-mortem analysis for a completed task
+
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
-| `--project` | string | Yes | Project slug |
-| `--task` | string | Yes | Task slug |
+| `project` (positional) | string | Yes | Project slug |
+| `task` (positional) | string | Yes | Task slug |
 
 ### `util read`
 

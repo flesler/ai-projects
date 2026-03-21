@@ -12,9 +12,9 @@ describe(toModule(__filename), () => {
       })
       const handler = async (_params: { name: string; age: number }) => {}
 
-      const command = defineCommand(schema, handler)
+      const command = defineCommand({ options: schema, handler })
 
-      expect(command.schema).toBe(schema)
+      expect(command.options).toBe(schema)
       expect(command.handler).toBe(handler)
       expect(command.parser).toBeDefined()
       expect(command.cli).toBeDefined()
@@ -27,7 +27,7 @@ describe(toModule(__filename), () => {
       })
       const handler = async () => {}
 
-      const command = defineCommand(schema, handler)
+      const command = defineCommand({ options: schema, handler })
 
       const parsed = command.parser.parse(['--name', 'test', '--count', '5']) as any
       expect(parsed.name).toBe('test')
@@ -43,7 +43,7 @@ describe(toModule(__filename), () => {
         captured = params
       }
 
-      const command = defineCommand(schema, handler)
+      const command = defineCommand({ options: schema, handler })
       await command.cli(['--value', 'test123'])
 
       expect(captured).toEqual({ value: 'test123' })
@@ -55,7 +55,7 @@ describe(toModule(__filename), () => {
       })
       const handler = async () => {}
 
-      const command = defineCommand(schema, handler)
+      const command = defineCommand({ options: schema, handler })
 
       expect(() => {
         command.parser.parse([])
@@ -67,9 +67,9 @@ describe(toModule(__filename), () => {
     it('should have all required properties', () => {
       const schema = z.object({ test: z.string() })
       const handler = async () => {}
-      const command = defineCommand(schema, handler)
+      const command = defineCommand({ options: schema, handler })
 
-      expect(command).toHaveProperty('schema')
+      expect(command).toHaveProperty('options')
       expect(command).toHaveProperty('parser')
       expect(command).toHaveProperty('handler')
       expect(command).toHaveProperty('cli')

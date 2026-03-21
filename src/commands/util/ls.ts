@@ -2,11 +2,11 @@ import { z } from 'zod'
 import defineCommand from '../../util/defineCommand.js'
 import util from '../../util/index.js'
 
-export default defineCommand(
-  z.object({
+export default defineCommand({
+  options: z.object({
     dir: z.string().optional().describe('Directory to list (defaults to current directory)'),
   }),
-  async ({ dir }) => {
+  handler: async ({ dir }) => {
     const dirPath = dir || process.cwd()
     const exists = await util.fileExists(dirPath)
     if (!exists) {
@@ -23,4 +23,4 @@ export default defineCommand(
       console.log(file)
     }
   },
-)
+})

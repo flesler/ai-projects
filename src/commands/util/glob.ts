@@ -4,13 +4,13 @@ import defineCommand from '../../util/defineCommand.js'
 import env from '../../util/env.js'
 import util from '../../util/index.js'
 
-export default defineCommand(
-  z.object({
+export default defineCommand({
+  options: z.object({
     pattern: z.string().describe('Glob pattern to search for'),
     cwd: z.string().optional().describe('Working directory (defaults to TEAM_HOME/projects)'),
     absolute: z.boolean().optional().describe('Return absolute paths'),
   }),
-  async ({ pattern, cwd, absolute }) => {
+  handler: async ({ pattern, cwd, absolute }) => {
     const searchCwd = cwd || util.join(env.TEAM_HOME, 'projects')
     const results = await fastGlob(pattern, {
       cwd: searchCwd,
@@ -26,4 +26,4 @@ export default defineCommand(
       console.log(file)
     }
   },
-)
+})

@@ -1,21 +1,22 @@
 import { z } from 'zod'
 import defineCommand from '../../util/defineCommand.js'
-import projects from '../../util/projects.js'
 import hooks from '../../util/hooks.js'
+import projects from '../../util/projects.js'
 import status from '../../util/status.js'
 
-export default defineCommand(
-  z.object({
+export default defineCommand({
+  description: 'Update task properties: name, description, status, priority, assignee, or append summary',
+  options: z.object({
     project: z.string().optional().describe('Project slug (defaults to current project from $PWD)'),
     task: z.string().optional().describe('Task slug (defaults to current task from $PWD)'),
     name: z.string().optional().describe('New name'),
     description: z.string().optional().describe('New description'),
-    status: z.string().optional().describe('New status'),
+    status: z.enum(['pending', 'in-progress', 'ongoing', 'done', 'blocked']).optional().describe('New status'),
     priority: z.enum(['low', 'medium', 'high']).optional().describe('New priority'),
     assignee: z.string().optional().describe('New assignee'),
     summary: z.string().optional().describe('Optional summary to append to status.md'),
   }),
-  async ({ project, task, name, description, status: newStatus, priority, assignee, summary }) => {
+  handler: async ({ project, task, name, description, status: newStatus, priority, assignee, summary }) => {
     // Use current context from PWD if not specified
     const ctx = { project, task }
     if (!ctx.project || !ctx.task) {
@@ -85,4 +86,4 @@ export default defineCommand(
 
     console.log(`Task ${ctx.task} updated`)
   },
-)
+})
