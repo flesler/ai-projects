@@ -1,5 +1,5 @@
 ---
-name: aip-sdk
+name: aip
 description: AIP SDK internals for developing the ai-projects CLI. Use when modifying commands, defineCommand, docs, or the command routing in this codebase.
 ---
 
@@ -61,21 +61,26 @@ Add command = add file. No manual registration.
 4. Outputs markdown: description, then table with option/args (positionals labeled)
 5. Run: `npm run docs`
 
+## No magic strings
+
+**Never** use literal strings for dir/file names (`'projects'`, `'tasks'`, `'hooks'`, `'main.md'`, etc.). Always use `config.dirs.*` and `config.files.*` from `src/util/config.ts`. This is mandatory; PRs introducing new magic strings will be rejected.
+
 ## Key Modules
 
 | Path | Role |
 |------|------|
 | `src/util/defineCommand.ts` | defineCommand, CommandDef, zod-opts integration |
-| `src/util/config.ts` | dirs (PROJECTS, TASKS, AGENTS, etc.), files (MAIN, STATUS), hookTypes, languages, targets |
-| `src/util/env.ts` | TEAM_HOME, getProjectFromPwd, getTaskFromPwd, getCurrentContext, getTargetDir |
+| `src/util/config.ts` | dirs (PROJECTS, TASKS, AGENTS, SKILLS, HOOKS), files (MAIN, STATUS, SKILL, AGENTS), hookTypes, languages, targets |
+| `src/util/env.ts` | TEAM_HOME, ROOT, NODE_ENV (env/config) |
+| `src/util/context.ts` | getProjectFromPwd, getTaskFromPwd, getCurrentContext, getTargetDir |
 | `src/util/projects.ts` | getProjectDir, getTaskDir, createTask, updateTask, ingestTask, etc. |
 | `src/util/hooks.ts` | runHooks, runHooksForContext — project/task hooks |
 
-## env.ts Conventions
+## env.ts / config.ts Conventions
 
-- `config` from env.ts = ROOT, TEAM_HOME, NODE_ENV (env/config)
+- `env` from env.ts = ROOT, TEAM_HOME, NODE_ENV (env/config)
 - `config` from config.ts = dirs, files, hookTypes (static)
-- Paths: `TEAM_HOME/projects/<project>/tasks/<task>/`
+- Paths: `TEAM_HOME/projects/<project>/tasks/<task>/` (use config.dirs to build, never literals)
 
 ## Hooks
 

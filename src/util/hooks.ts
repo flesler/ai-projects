@@ -52,7 +52,7 @@ export const executeHook = async (
   }
 
   const projectDir = context.project
-    ? util.join(env.TEAM_HOME, 'projects', context.project)
+    ? util.join(env.TEAM_HOME, config.dirs.PROJECTS, context.project)
     : targetDir
   const taskDir = context.task
     ? util.join(projectDir, config.dirs.TASKS, context.task)

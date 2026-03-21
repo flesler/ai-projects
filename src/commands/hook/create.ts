@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import defineCommand from '../../util/defineCommand.js'
 import util from '../../util/index.js'
-import env from '../../util/env.js'
+import ctx from '../../util/context.js'
 import config from '../../util/config.js'
 
 export default defineCommand({
@@ -15,10 +15,10 @@ export default defineCommand({
     const ext = `.${language}`
 
     // Determine target directory
-    const { targetDir, entityType } = env.getTargetDir(target)
+    const { targetDir, entityType } = ctx.getTargetDir(target)
 
     // Create hooks directory
-    const hooksDir = util.join(targetDir, 'hooks')
+    const hooksDir = util.join(targetDir, config.dirs.HOOKS)
     await util.ensureDir(hooksDir)
 
     // Create hook file

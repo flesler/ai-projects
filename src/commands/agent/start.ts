@@ -11,7 +11,7 @@ export default defineCommand({
   handler: async ({ name }) => {
     // Look for agent in tmp/hermes/agents/
     const agentDir = util.join(env.TEAM_HOME, config.dirs.AGENTS, name)
-    const agentFile = util.join(agentDir, 'AGENTS.md')
+    const agentFile = util.join(agentDir, config.files.AGENTS)
 
     const exists = await util.fileExists(agentFile)
     if (!exists) {

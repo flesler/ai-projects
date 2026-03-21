@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import defineCommand from '../../util/defineCommand.js'
 import projects from '../../util/projects.js'
-import env from '../../util/env.js'
+import ctx from '../../util/context.js'
 
 export default defineCommand({
   description: 'List tasks in a project, optionally filtered by status or assignee',
@@ -12,7 +12,7 @@ export default defineCommand({
   }),
   handler: async ({ project, status, assignee }) => {
     // Use current project from PWD if not specified
-    const projectSlug = project || env.getProjectFromPwd()
+    const projectSlug = project || ctx.getProjectFromPwd()
     if (!projectSlug) {
       throw new Error('No project specified and not in a project directory')
     }

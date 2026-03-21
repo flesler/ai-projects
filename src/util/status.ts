@@ -1,7 +1,9 @@
 /** Status logging utilities for append-only activity logs */
 
 import util from './index.js'
+import config from './config.js'
 import env from './env.js'
+import ctx from './context.js'
 
 /**
  * Standardized log format: timestamp | agent | text
@@ -17,7 +19,7 @@ export const formatLogEntry = (text: string, agent?: string): string => {
  * Creates the file if it doesn't exist
  */
 export const appendStatus = async (directory: string, text: string, agent?: string): Promise<void> => {
-  const statusPath = util.join(directory, 'status.md')
+  const statusPath = util.join(directory, config.files.STATUS)
   const logEntry = formatLogEntry(text, agent)
 
   // Append to file (create if doesn't exist)
@@ -29,7 +31,7 @@ export const appendStatus = async (directory: string, text: string, agent?: stri
  * Used for optional logging
  */
 export const appendStatusIfExists = async (directory: string, text: string, agent?: string): Promise<boolean> => {
-  const statusPath = util.join(directory, 'status.md')
+  const statusPath = util.join(directory, config.files.STATUS)
   const exists = await util.fileExists(statusPath)
   if (!exists) {
     return false
@@ -43,7 +45,7 @@ export const appendStatusIfExists = async (directory: string, text: string, agen
  * Read status history from status.md
  */
 export const readStatus = async (directory: string): Promise<string> => {
-  const statusPath = util.join(directory, 'status.md')
+  const statusPath = util.join(directory, config.files.STATUS)
   const exists = await util.fileExists(statusPath)
   if (!exists) {
     return ''
@@ -62,11 +64,11 @@ export const getCurrentAgent = (): string | undefined => {
  * Log to current task's status.md (from $PWD)
  */
 export const logTask = async (text: string, agent?: string): Promise<void> => {
-  const context = env.getCurrentContext()
+  const context = ctx.getCurrentContext()
   if (!context.project || !context.task) {
     throw new Error('Not in a task directory')
   }
-  const taskDir = util.join(env.TEAM_HOME, 'projects', context.project, 'tasks', context.task)
+  const taskDir = util.join(env.TEAM_HOME, config.dirs.PROJECTS, context.project, config.dirs.TASKS, context.task)
   await appendStatus(taskDir, text, agent || getCurrentAgent())
 }
 
@@ -74,11 +76,11 @@ export const logTask = async (text: string, agent?: string): Promise<void> => {
  * Log to current project's status.md (from $PWD)
  */
 export const logProject = async (text: string, agent?: string): Promise<void> => {
-  const project = env.getProjectFromPwd()
+  const project = ctx.getProjectFromPwd()
   if (!project) {
     throw new Error('Not in a project directory')
   }
-  const projectDir = util.join(env.TEAM_HOME, 'projects', project)
+  const projectDir = util.join(env.TEAM_HOME, config.dirs.PROJECTS, project)
   await appendStatus(projectDir, text, agent || getCurrentAgent())
 }
 
