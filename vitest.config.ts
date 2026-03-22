@@ -87,7 +87,7 @@ export default defineConfig(() => ({
     },
   },
   // Use ESM for better performance
-  esbuild: {
-    target: 'node18',
+  oxc: {
+    target: 'node24',
   },
 }))

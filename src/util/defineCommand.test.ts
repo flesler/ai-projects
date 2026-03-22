@@ -1,5 +1,5 @@
 import { toModule } from './tests.js'
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { z } from 'zod'
 import defineCommand from './defineCommand.js'
 
@@ -57,9 +57,14 @@ describe(toModule(__filename), () => {
 
       const command = defineCommand({ options: schema, handler })
 
+      // Suppress stderr output from zod-opts parser
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+
       expect(() => {
         command.parser.parse([])
       }).toThrow()
+
+      vi.restoreAllMocks()
     })
   })
 
