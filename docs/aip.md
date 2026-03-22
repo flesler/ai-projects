@@ -30,7 +30,7 @@ No options.
 
 ### `agent start`
 
-Start an agent: read AGENTS.md and export CURRENT_AGENT env var
+Start an agent: read SOUL.md and AGENTS.md, export CURRENT_AGENT env var
 
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|

@@ -12,10 +12,25 @@ aip-core (builder) | aip-meta (analyst) | aip-skills (librarian) | aip-ideas | r
 |-----|---------|
 | main.md | Goals, scope. Read first. |
 | status.md | Append-only log |
-| hooks/ | `{pre,post}-{create,update}.*` – shebang runs it. pre can exit 1 to block. |
+| hooks/ | `{pre,post}-{create,update,complete,start}.*` – shebang runs it. pre can exit 1 to block. |
 | inputs/ | Data consumed (read-only) |
 | outputs/ | Deliverables |
 | scripts/ | Automation helpers |
+
+## Validation & Automation
+
+Projects can include validation scripts and hooks to enforce folder semantics:
+
+- **`scripts/validate-structure.sh`** – Validates folder structure follows conventions
+  - Usage: `./scripts/validate-structure.sh [project|task] [path]`
+  - Checks: required files, hook naming, executable permissions
+  - Exit 0 = valid, 1 = errors found
+
+- **`hooks/pre-complete.sh`** – Runs before task completion
+  - Validates required files exist
+  - Checks status.md has completion entry
+  - Runs structure validation (warning only)
+  - Exit 1 blocks completion
 
 ## Hook Types
 

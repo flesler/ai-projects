@@ -59,9 +59,13 @@ util.run(async () => {
 
   for (const noun of util.keysOf(commands).sort()) {
     const verbs = commands[noun]
-    output += `  ${noun}: {\n`
+    // Quote noun if it contains special characters (like hyphens)
+    const safeNoun = noun.includes('-') ? `'${noun}'` : noun
+    output += `  ${safeNoun}: {\n`
     for (const verb of util.keysOf(verbs).sort()) {
-      output += `    ${verb}: ${importMap[`${noun}.${verb}`]},\n`
+      // Quote verb if it contains special characters
+      const safeVerb = verb.includes('-') ? `'${verb}'` : verb
+      output += `    ${safeVerb}: ${importMap[`${noun}.${verb}`]},\n`
     }
     output += `  },\n`
   }
