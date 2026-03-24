@@ -168,58 +168,6 @@ Update task properties: name, description, status, priority, assignee, or append
 
 ## Util
 
-### `util compact`
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `--text` | string | No | Text to compact (reads from stdin if not provided) |
-
-### `util glob`
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `--pattern` | string | Yes | Glob pattern to search for |
-| `--cwd` | string | No | Working directory (defaults to TEAM_HOME/projects) |
-| `--absolute` | boolean | No | Return absolute paths |
-
-### `util inspect`
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `--json` | string | Yes | JSON string to inspect/format |
-| `--compact` | boolean | No | Output as single line (default: false) |
-
-### `util iso`
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `--date` | string | No | Date to format (defaults to now, accepts any moment-parseable date) |
-
-### `util join`
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `--paths` | unknown | Yes | Path segments to join |
-
-### `util log`
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `--text` | string | Yes | Log message |
-| `--agent` | string | No | Agent name (defaults to $CURRENT_AGENT) |
-
-### `util ls`
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `--dir` | string | No | Directory to list (defaults to current directory) |
-
-### `util oneline`
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `--text` | string | No | Text to convert to one line (reads from stdin if not provided) |
-
 ### `util postmortem`
 
 Post-mortem analysis for a completed task
@@ -228,30 +176,4 @@ Post-mortem analysis for a completed task
 |--------|------|----------|-------------|
 | `project` (positional) | string | Yes | Project slug |
 | `task` (positional) | string | Yes | Task slug |
-
-### `util read`
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `--files` | unknown | Yes | Files to read (aggregated) |
-
-### `util relative`
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `--from` | string | Yes | Base path |
-| `--to` | string | Yes | Target path |
-
-### `util slugify`
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `--text` | string | Yes | Text to convert to slug |
-
-### `util write`
-
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `--file` | string | Yes | File to write to |
-| `--content` | string | No | Content to write (reads from stdin if not provided) |
 

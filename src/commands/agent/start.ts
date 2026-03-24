@@ -11,12 +11,12 @@ export default defineCommand({
   handler: async ({ name }) => {
     // Look for agent in tmp/hermes/agents/
     const agentDir = util.join(env.TEAM_HOME, config.dirs.AGENTS, name)
-    const agentFile = util.join(agentDir, config.files.AGENTS)
+    const mainFile = util.join(agentDir, config.files.MAIN)
     const soulFile = util.join(agentDir, 'SOUL.md')
 
-    const exists = await util.fileExists(agentFile)
+    const exists = await util.fileExists(mainFile)
     if (!exists) {
-      throw new Error(`Agent not found: ${name}\nExpected at: ${agentFile}`)
+      throw new Error(`Agent not found: ${name}\nExpected at: ${mainFile}`)
     }
 
     // Output environment export
@@ -32,7 +32,7 @@ export default defineCommand({
 
     // Output cat command for agent context
     console.log(`# AGENT_CONTEXT_START`)
-    console.log(`cat "${agentFile}"`)
+    console.log(`cat "${mainFile}"`)
     console.log(`# AGENT_CONTEXT_END`)
   },
 })

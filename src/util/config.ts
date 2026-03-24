@@ -14,7 +14,6 @@ export default {
     STATUS: 'status.md',
     LOG: 'audit.log',
     SKILL: 'SKILL.md',
-    AGENTS: 'AGENTS.md',
   },
   hookTypes: [
     'pre-create',
