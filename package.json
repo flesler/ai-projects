@@ -1,6 +1,6 @@
 {
   "name": "aip",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "type": "module",
   "description": "AI project management CLI - create and manage projects, tasks, and agents",
   "main": "dist/index.js",
@@ -39,6 +39,8 @@
     "lint:full:silent": "npm run -s lint:full && echo LINT OK",
     "docs": "tsx bin/docs.ts",
     "map": "npm run build:map",
+    "link": "npm link",
+    "unlink": "npm unlink",
     "prepare": "[ \"$CI\" != \"true\" ] && [ -d node_modules/husky ] && husky || true"
   },
   "keywords": [

@@ -1,20 +1,22 @@
 import _ from 'lodash'
+import pkg from '../package.json'
 import commandMap from './commands/index.js'
 import util from './util'
 import type { CommandDef } from './util/defineCommand.js'
 
 async function main(args: string[]) {
   const [noun, verb, ...rest] = args
+  const prefix = `${pkg.name} ${pkg.version} -`
 
   try {
     if (!noun || !util.isKeyOf(noun, commandMap)) {
-      console.log('Usage: aip <noun> <verb> [options]')
+      console.log(prefix, 'Usage: aip <noun> <verb> [options]')
       console.log(dump().map(line => `-> ${line}`).join('\n'))
       process.exit(1)
     }
     const verbs = commandMap[noun]
     if (!verb || !util.isKeyOf(verb, verbs)) {
-      console.log(`Usage: aip ${dump(noun)[0]} [options]`)
+      console.log(prefix, `Usage: aip ${dump(noun)[0]} [options]`)
       process.exit(1)
     }
 
