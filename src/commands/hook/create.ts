@@ -6,12 +6,12 @@ import config from '../../util/config.js'
 
 export default defineCommand({
   options: z.object({
-    lang: z.enum(config.languages).optional().describe('Language (default: ts)'),
-    target: z.enum(config.targets).optional().describe('Target level (default: task if in task dir, else project)'),
+    lang: z.enum(config.languages).default('ts').describe('Language'),
+    target: z.enum(config.targets).default('project').describe('Target level'),
   }),
   args: z.object({ type: z.enum(config.hookTypes).describe('Hook type (e.g., pre-create, post-complete)') }),
   handler: async ({ type, lang, target }) => {
-    const language = lang || 'ts'
+    const language = lang
     const ext = `.${language}`
 
     // Determine target directory

@@ -5,18 +5,20 @@ import projects from '../../util/projects.js'
 
 export default defineCommand({
   options: z.object({
-    name: z.string().describe('Agent name'),
     description: z.string().describe('Agent description'),
-    status: z.string().optional().describe('Initial status (default: active)'),
+    status: z.string().default('active').describe('Initial status'),
   }),
-  handler: async ({ name, description, status: initialStatus }) => {
+  args: z.object({
+    name: z.string().describe('Agent name'),
+  }),
+  handler: async ({ name, description, status }) => {
     const slug = util.slugify(name)
 
     // Create agent
     await projects.createAgent(slug, {
       name,
       description,
-      status: initialStatus || 'active',
+      status,
       created: new Date().toISOString(),
     })
 

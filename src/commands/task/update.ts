@@ -7,14 +7,16 @@ import status from '../../util/status.js'
 export default defineCommand({
   description: 'Update task properties: name, description, status, priority, assignee, or append summary',
   options: z.object({
-    project: z.string().optional().describe('Project slug (defaults to current project from $PWD)'),
-    task: z.string().optional().describe('Task slug (defaults to current task from $PWD)'),
     name: z.string().optional().describe('New name'),
     description: z.string().optional().describe('New description'),
     status: z.enum(['pending', 'in-progress', 'ongoing', 'done', 'blocked']).optional().describe('New status'),
     priority: z.enum(['low', 'medium', 'high']).optional().describe('New priority'),
     assignee: z.string().optional().describe('New assignee'),
     summary: z.string().optional().describe('Optional summary to append to status.md'),
+  }),
+  args: z.object({
+    project: z.string().optional().describe('Project slug (defaults to current project from $PWD)'),
+    task: z.string().optional().describe('Task slug (defaults to current task from $PWD)'),
   }),
   handler: async ({ project, task, name, description, status: newStatus, priority, assignee, summary }) => {
     // Use current context from PWD if not specified

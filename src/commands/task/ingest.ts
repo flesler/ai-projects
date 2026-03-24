@@ -1,11 +1,12 @@
 import { z } from 'zod'
+import ctx from '../../util/context.js'
 import defineCommand from '../../util/defineCommand.js'
 import projects from '../../util/projects.js'
-import ctx from '../../util/context.js'
 
 export default defineCommand({
   description: 'Output full task context (main.md, status.md) for ingestion by agents',
-  options: z.object({
+  options: z.object({}),
+  args: z.object({
     project: z.string().optional().describe('Project slug (default: from $PWD)'),
     task: z.string().optional().describe('Task slug (default: from $PWD)'),
   }),

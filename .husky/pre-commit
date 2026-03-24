@@ -37,4 +37,4 @@ if [ $? -ne 0 ]; then
 fi
 
 # Auto-add generated files
-git add docs/aip.md
+git add src/prompts/aip.md

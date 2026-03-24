@@ -35,7 +35,7 @@ describe(toModule(__filename), () => {
     })
 
     it('should execute handler with parsed args via cli', async () => {
-      let captured: any
+      let captured: { value: string } | undefined
       const schema = z.object({
         value: z.string(),
       })

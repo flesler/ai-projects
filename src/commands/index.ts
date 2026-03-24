@@ -10,6 +10,7 @@ import projectCreate from './project/create.js'
 import projectCurrent from './project/current.js'
 import projectList from './project/list.js'
 import projectUpdate from './project/update.js'
+import promptRead from './prompt/read.js'
 import skillRead from './skill/read.js'
 import taskCreate from './task/create.js'
 import taskCurrent from './task/current.js'
@@ -36,6 +37,9 @@ const commands = {
     current: projectCurrent,
     list: projectList,
     update: projectUpdate,
+  },
+  prompt: {
+    read: promptRead,
   },
   skill: {
     read: skillRead,

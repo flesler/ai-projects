@@ -8,12 +8,14 @@ import ctx from '../../util/context.js'
 export default defineCommand({
   description: 'Update project properties: name, description, status, assignee, or append summary',
   options: z.object({
-    project: z.string().optional().describe('Project slug (defaults to current project from $PWD)'),
     name: z.string().optional().describe('New name'),
     description: z.string().optional().describe('New description'),
     status: z.string().optional().describe('New status'),
     assignee: z.string().optional().describe('New assignee'),
     summary: z.string().optional().describe('Optional summary to append to status.md'),
+  }),
+  args: z.object({
+    project: z.string().optional().describe('Project slug (defaults to current project from $PWD)'),
   }),
   handler: async ({ project, name, description, status: newStatus, assignee, summary }) => {
     // Use current project from PWD if not specified

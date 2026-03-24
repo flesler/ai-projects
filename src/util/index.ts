@@ -1,4 +1,4 @@
-import { spawn as cpSpawn, exec as cpExec } from 'child_process'
+import { exec as cpExec, spawn as cpSpawn } from 'child_process'
 import fs from 'fs/promises'
 import _ from 'lodash'
 import type { Duration, DurationInputObject, MomentInput } from 'moment'
@@ -10,7 +10,7 @@ import { inspect as utilInspect } from 'util'
 
 const util = {
   // Relative to the project root
-  REPO: path.resolve(fileURLToPath(import.meta.url), '../../../'),
+  REPO: fileURLToPath(import.meta.url.replace(/\/(dist|src)\/.*/, '/')),
 
   join: (...segments: string[]): string => {
     return path.join(...segments)
@@ -36,8 +36,8 @@ const util = {
     return fs.readFile(filePath, 'utf8')
   },
 
-  async readRepo(filePath: string): Promise<string> {
-    return util.read(util.onRepo(filePath))
+  async readRepo(...segments: string[]): Promise<string> {
+    return util.read(util.onRepo(...segments))
   },
 
   /** Check if file exists */

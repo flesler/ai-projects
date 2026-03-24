@@ -6,7 +6,7 @@ import config from '../../util/config.js'
 
 export default defineCommand({
   options: z.object({
-    target: z.enum(config.targets).optional().describe('Target level (default: auto-detect from $PWD)'),
+    target: z.enum(config.targets).optional().describe('Target level'),
   }),
   args: z.object({ type: z.enum(config.hookTypes).describe('Hook type to run') }),
   handler: async ({ type, target }) => {

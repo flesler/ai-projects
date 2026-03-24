@@ -3,17 +3,19 @@ import defineCommand from '../../util/defineCommand.js'
 import util from '../../util/index.js'
 import projects from '../../util/projects.js'
 import hooks from '../../util/hooks.js'
-import status from '../../util/status.js'
+import statusUtil from '../../util/status.js'
 
 export default defineCommand({
   description: 'Create a new project with name, description, optional status and assignee',
   options: z.object({
-    name: z.string().describe('Project name'),
     description: z.string().describe('Project description'),
-    status: z.string().optional().describe('Initial status (default: active)'),
+    status: z.string().default('active').describe('Initial status'),
     assignee: z.string().optional().describe('Assignee agent slug'),
   }),
-  handler: async ({ name, description, status: initialStatus, assignee }) => {
+  args: z.object({
+    name: z.string().describe('Project name'),
+  }),
+  handler: async ({ name, description, status, assignee }) => {
     const slug = util.slugify(name)
 
     // Run pre-create hooks
@@ -31,13 +33,13 @@ export default defineCommand({
     await projects.createProject(slug, {
       name,
       description,
-      status: initialStatus || 'active',
+      status,
       assignee,
       created: new Date().toISOString(),
     })
 
     // Log creation
-    await status.appendStatus(projectDir, `Project created: ${name}`)
+    await statusUtil.appendStatus(projectDir, `Project created: ${name}`)
 
     // Run post-create hooks
     await hooks.runHooks(projectDir, 'post-create', {

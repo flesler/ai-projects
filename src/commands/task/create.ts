@@ -3,7 +3,7 @@ import defineCommand from '../../util/defineCommand.js'
 import hooks from '../../util/hooks.js'
 import util from '../../util/index.js'
 import projects from '../../util/projects.js'
-import status from '../../util/status.js'
+import statusUtil from '../../util/status.js'
 
 export default defineCommand({
   description: 'Create a new task with optional priority, assignee, and initial status',
@@ -11,13 +11,13 @@ export default defineCommand({
     description: z.string().optional().describe('Task description'),
     priority: z.enum(['low', 'medium', 'high']).optional().describe('Task priority'),
     assignee: z.string().optional().describe('Assignee agent slug'),
-    status: z.enum(['pending', 'in-progress', 'ongoing', 'done']).optional().describe('Initial status'),
+    status: z.enum(['pending', 'in-progress', 'ongoing', 'done']).default('pending').describe('Initial status'),
   }),
   args: z.object({
     project: z.string().describe('Project slug'),
     name: z.string().describe('Task name'),
   }),
-  handler: async ({ project, name, description, priority, assignee, status: initialStatus }) => {
+  handler: async ({ project, name, description, priority, assignee, status: taskStatus }) => {
     const slug = util.slugify(name)
 
     // Run pre-create hooks
@@ -41,14 +41,14 @@ export default defineCommand({
     await projects.createTask(project, slug, {
       name,
       description,
-      priority: priority || 'medium',
+      priority,
       assignee,
-      status: initialStatus || 'pending',
+      status: taskStatus,
       created: new Date().toISOString(),
     })
 
     // Log creation
-    await status.appendStatus(taskDir, `Task created: ${name}`)
+    await statusUtil.appendStatus(taskDir, `Task created: ${name}`)
 
     // Run post-create hooks
     await hooks.runHooksForContext(
