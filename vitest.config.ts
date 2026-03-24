@@ -57,7 +57,6 @@ export default defineConfig(() => ({
     environment: 'node',
     include: ['src/**/*.test.ts', 'bin/**/*.test.ts'],
     exclude: ['node_modules', 'dist', 'tmp'],
-    setupFiles: ['./src/setup.ts'],
     // test:watch:file prints nothing but saves to file the last result (for AI)
     reporters: [TO_FILE ? new FileReporter() : VERBOSE ? 'verbose' : 'dot'],
     logHeapUsage: false,

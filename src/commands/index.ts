@@ -3,12 +3,14 @@
 import agentCreate from './agent/create.js'
 import agentCurrent from './agent/current.js'
 import agentList from './agent/list.js'
+import agentPath from './agent/path.js'
 import agentStart from './agent/start.js'
 import hookCreate from './hook/create.js'
 import hookRun from './hook/run.js'
 import projectCreate from './project/create.js'
 import projectCurrent from './project/current.js'
 import projectList from './project/list.js'
+import projectPath from './project/path.js'
 import projectUpdate from './project/update.js'
 import promptRead from './prompt/read.js'
 import skillRead from './skill/read.js'
@@ -16,6 +18,7 @@ import taskCreate from './task/create.js'
 import taskCurrent from './task/current.js'
 import taskIngest from './task/ingest.js'
 import taskList from './task/list.js'
+import taskPath from './task/path.js'
 import taskStart from './task/start.js'
 import taskUpdate from './task/update.js'
 import utilPostmortem from './util/postmortem.js'
@@ -26,6 +29,7 @@ const commands = {
     create: agentCreate,
     current: agentCurrent,
     list: agentList,
+    path: agentPath,
     start: agentStart,
   },
   hook: {
@@ -36,6 +40,7 @@ const commands = {
     create: projectCreate,
     current: projectCurrent,
     list: projectList,
+    path: projectPath,
     update: projectUpdate,
   },
   prompt: {
@@ -49,6 +54,7 @@ const commands = {
     current: taskCurrent,
     ingest: taskIngest,
     list: taskList,
+    path: taskPath,
     start: taskStart,
     update: taskUpdate,
   },

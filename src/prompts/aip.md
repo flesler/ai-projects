@@ -9,6 +9,9 @@ Prepend `aip` to each command
 
 `agent list`
 
+`agent path`: Output agent directory path (for cd)
+· <name>: Agent name (directory name)
+
 `agent start`: Start an agent: read SOUL.md and AGENTS.md content
 · <name>: Agent name (directory name)
 
@@ -31,6 +34,9 @@ Prepend `aip` to each command
 
 `project list`: List all projects, optionally filtered by status
 · --status: Filter by status
+
+`project path`: Output project directory path (for cd)
+· <name>: Project name (slug)
 
 `project update`: Update project properties: name, description, status, assignee, or append summary
 · [project]: Project slug (defaults to current project from $PWD)  
@@ -64,6 +70,10 @@ Prepend `aip` to each command
 · --project: Project slug (defaults to current project from $PWD)  
 · --status: Filter by status  
 · --assignee: Filter by assignee
+
+`task path`: Output task directory path (for cd)
+· <project>: Project slug  
+· <task>: Task slug
 
 `task start`: Start a task: set status to in-progress, optionally print context
 · <project>: Project slug  

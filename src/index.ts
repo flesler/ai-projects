@@ -4,6 +4,16 @@ import commandMap from './commands/index.js'
 import util from './util'
 import type { CommandDef } from './util/defineCommand.js'
 
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled Rejection:', err)
+  process.exit(1)
+})
+
+process.on('uncaughtException', (err) => {
+  console.error('Unhandled Exception:', err)
+  process.exit(1)
+})
+
 async function main(args: string[]) {
   const [noun, verb, ...rest] = args
   const prefix = `${pkg.name} ${pkg.version} -`
