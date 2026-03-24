@@ -5,30 +5,18 @@ import env from '../../util/env.js'
 import util from '../../util/index.js'
 
 export default defineCommand({
-  description: 'Start an agent: read SOUL.md and AGENTS.md content',
+  description: 'Output agent directory path (for cd)',
   options: z.object({}),
   args: z.object({ name: z.string().describe('Agent name (directory name)') }),
   handler: async ({ name }) => {
-    // Look for agent in tmp/hermes/agents/
     const agentDir = util.join(env.TEAM_HOME, config.dirs.AGENTS, name)
     const mainFile = util.join(agentDir, config.files.MAIN)
-    const soulFile = util.join(agentDir, 'SOUL.md')
 
     const exists = await util.fileExists(mainFile)
     if (!exists) {
       throw new Error(`Agent not found: ${name}\nExpected at: ${mainFile}`)
     }
 
-    // Output soul context (if exists)
-    const soulExists = await util.fileExists(soulFile)
-    if (soulExists) {
-      const soulContent = await util.read(soulFile)
-      console.log(soulContent)
-      console.log('')
-    }
-
-    // Output agent context
-    const mainContent = await util.read(mainFile)
-    console.log(mainContent)
+    console.log(agentDir)
   },
 })

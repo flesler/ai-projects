@@ -9,7 +9,7 @@ Prepend `aip` to each command
 
 `agent list`
 
-`agent start`: Start an agent: read SOUL.md and AGENTS.md, export CURRENT_AGENT env var
+`agent start`: Start an agent: read SOUL.md and AGENTS.md content
 · <name>: Agent name (directory name)
 
 `hook create`
@@ -65,10 +65,10 @@ Prepend `aip` to each command
 · --status: Filter by status  
 · --assignee: Filter by assignee
 
-`task start`: Start a task: set status to in-progress, output cd and env vars, optionally print context
+`task start`: Start a task: set status to in-progress, optionally print context
 · <project>: Project slug  
 · <task>: Task slug  
-· --ingest: Also output context ingestion for this task (default: false)
+· --ingest: Also output context for this task (default: false)
 
 `task update`: Update task properties: name, description, status, priority, assignee, or append summary
 · [project]: Project slug (defaults to current project from $PWD)  
