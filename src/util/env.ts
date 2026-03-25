@@ -51,13 +51,13 @@ let envHome = process.env.AIP_HOME
 if (!envHome) {
   dotenv.config({ path: path.join(ROOT, '.env'), quiet: true })
   envHome = process.env.AIP_HOME
-  console.log('envHome', envHome)
 }
 if (envHome?.startsWith('~')) {
   envHome = path.join(os.homedir(), envHome.slice(1))
 }
 if (!envHome || !path.isAbsolute(envHome)) {
-  throw new Error('AIP_HOME must be set and be an absolute path')
+  console.error('AIP_HOME env var must be set and be an absolute path', envHome)
+  process.exit(1)
 }
 
 /** Configuration from .env. TEAM_HOME = base (tmp/hermes), projects in TEAM_HOME/projects/ */
