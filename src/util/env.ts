@@ -56,7 +56,7 @@ if (envHome?.startsWith('~')) {
   envHome = path.join(os.homedir(), envHome.slice(1))
 }
 if (!envHome || !path.isAbsolute(envHome)) {
-  console.error('AIP_HOME env var must be set and be an absolute path', envHome)
+  console.error('AIP_HOME env var must be set and be an absolute path', envHome || '')
   process.exit(1)
 }
 
