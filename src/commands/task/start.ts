@@ -21,8 +21,7 @@ export default defineCommand({
 
     // Optionally output context for ingestion
     if (ingest) {
-      const content = await projects.ingestTask(project, task)
-      console.log(content)
+      await projects.ingestTask(project, task)
     }
   },
 })

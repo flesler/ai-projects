@@ -5,6 +5,10 @@ import agentCurrent from './agent/current.js'
 import agentList from './agent/list.js'
 import agentPath from './agent/path.js'
 import agentStart from './agent/start.js'
+import helpApi from './help/api.js'
+import helpHooks from './help/hooks.js'
+import helpStructure from './help/structure.js'
+import helpUsage from './help/usage.js'
 import hookCreate from './hook/create.js'
 import hookRun from './hook/run.js'
 import projectCreate from './project/create.js'
@@ -12,7 +16,6 @@ import projectCurrent from './project/current.js'
 import projectList from './project/list.js'
 import projectPath from './project/path.js'
 import projectUpdate from './project/update.js'
-import promptRead from './prompt/read.js'
 import skillRead from './skill/read.js'
 import taskCreate from './task/create.js'
 import taskCurrent from './task/current.js'
@@ -22,6 +25,7 @@ import taskPath from './task/path.js'
 import taskStart from './task/start.js'
 import taskUpdate from './task/update.js'
 import utilPostmortem from './util/postmortem.js'
+import utilRead from './util/read.js'
 
 /** Command map organized by noun and verb */
 const commands = {
@@ -31,6 +35,12 @@ const commands = {
     list: agentList,
     path: agentPath,
     start: agentStart,
+  },
+  help: {
+    api: helpApi,
+    hooks: helpHooks,
+    structure: helpStructure,
+    usage: helpUsage,
   },
   hook: {
     create: hookCreate,
@@ -42,9 +52,6 @@ const commands = {
     list: projectList,
     path: projectPath,
     update: projectUpdate,
-  },
-  prompt: {
-    read: promptRead,
   },
   skill: {
     read: skillRead,
@@ -60,6 +67,7 @@ const commands = {
   },
   util: {
     postmortem: utilPostmortem,
+    read: utilRead,
   },
 } as const
 

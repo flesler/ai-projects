@@ -1,51 +1,54 @@
-# AIP Hooks
+import { z } from 'zod'
+import defineCommand from '../../util/defineCommand.js'
+
+const TEXT = `# AIP Hooks
 
 Automated scripts that run before/after project/task actions.
 
 ## Hook Types
 
 **Pre-hooks** (block action if they fail):
-- `pre-create` - Before project/task creation
-- `pre-start` - Before task start
-- `pre-update` - Before task/project update
-- `pre-complete` - Before task completion (quality gates)
+- \`pre-create\` - Before project/task creation
+- \`pre-start\` - Before task start
+- \`pre-update\` - Before task/project update
+- \`pre-complete\` - Before task completion (quality gates)
 
 **Post-hooks** (failures logged but don't block):
-- `post-create` - After creation
-- `post-start` - After task start
-- `post-update` - After update
-- `post-complete` - After completion (cleanup, notifications)
+- \`post-create\` - After creation
+- \`post-start\` - After task start
+- \`post-update\` - After update
+- \`post-complete\` - After completion (cleanup, notifications)
 
 ## File Location
 
-```
+\`\`\`
 tmp/hermes/projects/{project}/hooks/
 ├── pre-complete.ts    # Project-level hook
 └── post-create.sh
 
 tmp/hermes/projects/{project}/tasks/{task}/hooks/
 └── pre-update.py      # Task-level hook
-```
+\`\`\`
 
 **Execution order:** Project hooks first, then task hooks.
 
 ## Environment Variables
 
-Hooks receive these automatically:
+Hooks receive these automatic:
 
 | Variable | Always | Description |
 |----------|--------|-------------|
-| `HOOK_TYPE` | ✅ | e.g. `pre-complete` |
-| `ENTITY_TYPE` | ✅ | `project` or `task` |
-| `TARGET_DIR` | ✅ | Directory being acted on |
-| `PROJECT_DIR` | ✅ | Project root path |
-| `PROJECT_SLUG` | ✅ | Project name |
-| `TASK_DIR` | Task only | Task directory path |
-| `TASK_SLUG` | Task only | Task name |
+| \`HOOK_TYPE\` | ✅ | e.g. \`pre-complete\` |
+| \`ENTITY_TYPE\` | ✅ | \`project\` or \`task\` |
+| \`TARGET_DIR\` | ✅ | Directory being acted on |
+| \`PROJECT_DIR\` | ✅ | Project root path |
+| \`PROJECT_SLUG\` | ✅ | Project name |
+| \`TASK_DIR\` | Task only | Task directory path |
+| \`TASK_SLUG\` | Task only | Task name |
 
 ## Creating Hooks
 
-```bash
+\`\`\`bash
 # TypeScript/JavaScript
 aip hook create pre-complete --lang ts
 
@@ -54,13 +57,13 @@ aip hook create post-create --lang sh
 
 # Python
 aip hook create pre-update --lang py
-```
+\`\`\`
 
 ## Examples
 
 ### Pre-complete validation (TypeScript)
 
-```typescript
+\`\`\`typescript
 #!/usr/bin/env tsx
 import { readFileSync } from 'fs'
 import { join } from 'path'
@@ -81,11 +84,11 @@ if (!existsSync(statusPath) || readFileSync(statusPath, 'utf-8').length === 0) {
   console.error('❌ status.md is empty')
   process.exit(1)
 }
-```
+\`\`\`
 
 ### Post-complete archive (Shell)
 
-```bash
+\`\`\`bash
 #!/bin/bash
 # Archive outputs after task completion
 
@@ -93,11 +96,11 @@ archive_dir="$PROJECT_DIR/archive/$TASK_SLUG"
 mkdir -p "$archive_dir"
 cp -r "$TASK_DIR/outputs/"* "$archive_dir/" 2>/dev/null || true
 echo "✅ Archived to $archive_dir"
-```
+\`\`\`
 
 ### Pre-update lock check (Python)
 
-```python
+\`\`\`python
 #!/usr/bin/env python3
 import os
 from pathlib import Path
@@ -109,12 +112,12 @@ if lock_file.exists():
     print("❌ Task is locked")
     print("   Remove .locked file to allow updates")
     sys.exit(1)
-```
+\`\`\`
 
 ## Rules
 
 **DO:**
-- Exit `0` for success, `1` for failure
+- Exit \`0\` for success, \`1\` for failure
 - Use environment variables (don't hardcode paths)
 - Log clear error messages
 - Keep hooks fast (<5s ideal)
@@ -128,7 +131,7 @@ if lock_file.exists():
 
 ## Debugging
 
-```bash
+\`\`\`bash
 # Test hook manually
 cd tmp/hermes/projects/my-project
 ./hooks/pre-complete.ts
@@ -138,7 +141,7 @@ echo $HOOK_TYPE $PROJECT_SLUG $TASK_SLUG
 
 # Run with verbose logging
 DEBUG=1 aip task update --status done
-```
+\`\`\`
 
 ## Common Patterns
 
@@ -163,3 +166,12 @@ DEBUG=1 aip task update --status done
 ---
 
 *Hooks automate workflow enforcement. Pre-hooks guard quality, post-hooks handle cleanup.*
+`
+
+export default defineCommand({
+  description: 'Hook types, env vars, and patterns',
+  options: z.object({}),
+  handler: async () => {
+    console.log(TEXT)
+  },
+})

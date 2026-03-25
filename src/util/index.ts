@@ -40,6 +40,32 @@ const util = {
     return util.read(util.onRepo(...segments))
   },
 
+  async readMany(...paths: string[]): Promise<string[]> {
+    const contents = await Promise.all(paths.map(async (path) => {
+      if (await util.fileExists(path)) {
+        const content = await util.read(path)
+        return `# ${path}\n\n${content}`
+      }
+      return ''
+    }))
+    return contents.filter(Boolean)
+  },
+
+  async logFiles(...paths: string[]): Promise<void> {
+    const contents = await util.readMany(...paths)
+    console.log(contents.join('\n\n---\n\n'))
+  },
+
+  /** Compact lines for CLI usage: `noun {verb1|verb2|…}`; optional noun limits to one row */
+  dumpCommandMapLines(commandMap: Record<string, Record<string, unknown>>, noun?: string): string[] {
+    const data = noun ? _.pick(commandMap, noun) : commandMap
+    const rows: string[] = []
+    for (const [n, verbs] of util.entriesOf(data)) {
+      rows.push(`${n} {${Object.keys(verbs).join('|')}}`)
+    }
+    return rows
+  },
+
   /** Check if file exists */
   async fileExists(filePath: string): Promise<boolean> {
     try {

@@ -1,6 +1,5 @@
 /** Project and task management utilities */
 
-import path from 'path'
 import config from './config.js'
 import env from './env.js'
 import {
@@ -195,71 +194,43 @@ const projects = {
   /**
    * Read all files in a task for context ingestion
    */
-  async ingestTask(projectSlug: string, taskSlug: string): Promise<string> {
+  async ingestTask(projectSlug: string, taskSlug: string): Promise<void> {
     const taskDir = this.getTaskDir(projectSlug, taskSlug)
     const projectDir = this.getProjectDir(projectSlug)
-    const files: string[] = []
 
-    const projectMain = util.join(projectDir, config.files.MAIN)
-    if (await util.fileExists(projectMain)) {
-      files.push(`## Project: ${projectSlug}\n\n${await util.read(projectMain)}`)
-    }
+    const paths = [
+      util.join(projectDir, config.files.MAIN),
+      util.join(taskDir, config.files.MAIN),
+      util.join(taskDir, config.files.STATUS),
+    ]
 
-    const taskMain = util.join(taskDir, config.files.MAIN)
-    if (await util.fileExists(taskMain)) {
-      files.push(`## Task: ${taskSlug}\n\n${await util.read(taskMain)}`)
-    }
-
-    const taskStatus = util.join(taskDir, config.files.STATUS)
-    if (await util.fileExists(taskStatus)) {
-      files.push(`## Task Status Log\n\n${await util.read(taskStatus)}`)
-    }
-
-    return files.join('\n\n---\n\n')
+    await util.logFiles(...paths)
   },
 
   /**
    * Read all files in a project for context ingestion
    */
-  async ingestProject(projectSlug: string): Promise<string> {
+  async ingestProject(projectSlug: string): Promise<void> {
     const projectDir = this.getProjectDir(projectSlug)
-    const files: string[] = []
 
-    const projectMain = util.join(projectDir, config.files.MAIN)
-    if (await util.fileExists(projectMain)) {
-      files.push(`## Project: ${projectSlug}\n\n${await util.read(projectMain)}`)
-    }
-
-    const projectStatus = util.join(projectDir, config.files.STATUS)
-    if (await util.fileExists(projectStatus)) {
-      files.push(`## Project Status Log\n\n${await util.read(projectStatus)}`)
-    }
+    const paths = [
+      util.join(projectDir, config.files.MAIN),
+      util.join(projectDir, config.files.STATUS),
+    ]
 
     const tasks = await this.listTasks(projectSlug)
     for (const taskSlug of tasks) {
-      const taskMain = util.join(this.getTaskDir(projectSlug, taskSlug), config.files.MAIN)
-      if (await util.fileExists(taskMain)) {
-        files.push(`## Task: ${taskSlug}\n\n${await util.read(taskMain)}`)
-      }
+      paths.push(util.join(this.getTaskDir(projectSlug, taskSlug), config.files.MAIN))
     }
 
-    return files.join('\n\n---\n\n')
+    await util.logFiles(...paths)
   },
 
   /**
    * Read multiple files for context ingestion
    */
-  async ingestFiles(filePaths: string[]): Promise<string> {
-    const files: string[] = []
-
-    for (const filePath of filePaths) {
-      if (await util.fileExists(filePath)) {
-        const content = await util.read(filePath)
-        files.push(`## ${path.basename(filePath)}\n\n${content}`)
-      }
-    }
-
-    return files.join('\n\n---\n\n')
+  async ingestFiles(filePaths: string[]): Promise<void> {
+    await util.logFiles(...filePaths)
   },
 }
 

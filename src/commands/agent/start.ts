@@ -19,16 +19,8 @@ export default defineCommand({
       throw new Error(`Agent not found: ${name}\nExpected at: ${mainFile}`)
     }
 
-    // Output soul context (if exists)
-    const soulExists = await util.fileExists(soulFile)
-    if (soulExists) {
-      const soulContent = await util.read(soulFile)
-      console.log(soulContent)
-      console.log('')
-    }
-
     // Output agent context
-    const mainContent = await util.read(mainFile)
-    console.log(mainContent)
+    const paths = [soulFile, mainFile]
+    await util.logFiles(...paths)
   },
 })

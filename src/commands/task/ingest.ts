@@ -17,7 +17,6 @@ export default defineCommand({
     if (!projectSlug || !taskSlug) {
       throw new Error('Need project and task (or cd into task dir)')
     }
-    const content = await projects.ingestTask(projectSlug, taskSlug)
-    console.log(content)
+    await projects.ingestTask(projectSlug, taskSlug)
   },
 })

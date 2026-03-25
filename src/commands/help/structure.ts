@@ -1,10 +1,13 @@
-# AIP Project Structure
+import { z } from 'zod'
+import defineCommand from '../../util/defineCommand.js'
+
+const TEXT = `# AIP Project Structure
 
 File organization for autonomous AI work.
 
 ## Directory Layout
 
-```
+\`\`\`
 $ROOT/
 ├── projects/
 │   ├── {project-slug}/
@@ -25,7 +28,7 @@ $ROOT/
 └── agents/
     └── {agent-slug}/
         └── main.md           # Agent profile
-```
+\`\`\`
 
 ## File Purposes
 
@@ -43,7 +46,7 @@ $ROOT/
 - Acceptance criteria
 
 **Frontmatter:**
-```yaml
+\`\`\`yaml
 ---
 name: Clear Title
 description: One-line summary
@@ -51,21 +54,21 @@ assignee: agent-name
 status: pending|in-progress|ongoing|done|blocked
 created: YYYY-MM-DD
 ---
-```
+\`\`\`
 
 ### status.md (Activity Log - Append Only)
 
 **Task updates** (each work session):
-```markdown
+\`\`\`markdown
 ### 2026-03-24 14:30 - Implemented API integration
 ✅ Completed REST API with error handling. Next: write tests.
-```
+\`\`\`
 
 **Project updates** (when task completes):
-```markdown
+\`\`\`markdown
 ### 2026-03-24 18:00 - Task: api-integration ✅
 Implemented 5 endpoints with validation. Details: tasks/api-integration/
-```
+\`\`\`
 
 **Rules:**
 - One line per session
@@ -81,7 +84,7 @@ Store here:
 - Web scrapes
 - Reference documents
 
-**Naming:** `api-response-2026-03-24.json`, `scraped-docs.md`
+**Naming:** \`api-response-2026-03-24.json\`, \`scraped-docs.md\`
 
 ### outputs/ (Deliverables)
 
@@ -91,7 +94,7 @@ Store here:
 - Processed data
 - Artifacts for external use
 
-**Naming:** `final-report.md`, `optimized-config.yaml`
+**Naming:** \`final-report.md\`, \`optimized-config.yaml\`
 
 ### scripts/ (Automation)
 
@@ -111,11 +114,11 @@ Create when:
 ### Starting Work
 
 1. **Read context**
-   ```bash
+   \`\`\`bash
    cat projects/{project}/main.md
    cat projects/{project}/tasks/{task}/main.md
    cat projects/{project}/tasks/{task}/status.md
-   ```
+   \`\`\`
 
 2. **Check recent activity** (status.md)
 
@@ -130,13 +133,13 @@ Create when:
 ### Completing Work
 
 1. **Update task status.md** (final entry)
-2. **Update task main.md** status → `done`
+2. **Update task main.md** status → \`done\`
 3. **Append to project status.md** (packed summary)
 4. **Ensure outputs/** has all deliverables
 
 ## Commands
 
-```bash
+\`\`\`bash
 # Create
 aip project create {name} --description "{desc}"
 aip task create {project} {name} --description "{desc}"
@@ -151,7 +154,7 @@ aip task update {project} {task} --summary "Completed X"
 
 # Context
 aip task ingest {project} {task}   # Full context for AI
-```
+\`\`\`
 
 ## Best Practices
 
@@ -172,3 +175,12 @@ aip task ingest {project} {task}   # Full context for AI
 ---
 
 *Structure enables autonomy. Clean files = clear context = better execution.*
+`
+
+export default defineCommand({
+  description: 'Project and task directory layout for autonomous work',
+  options: z.object({}),
+  handler: async () => {
+    console.log(TEXT)
+  },
+})

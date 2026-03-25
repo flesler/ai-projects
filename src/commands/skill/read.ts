@@ -17,7 +17,6 @@ export default defineCommand({
       throw new Error(`Skill not found: ${name}\nExpected at: ${skillFile}`)
     }
 
-    const content = await util.read(skillFile)
-    console.log(content)
+    await util.logFiles(skillFile)
   },
 })

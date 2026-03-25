@@ -5,8 +5,10 @@ Command-line tool for managing AI agent projects, tasks, and agents.
 ## Installation
 
 ```bash
-npm install -g aip
+npm install -g ai-projects
 ```
+
+The `aip` command is provided by the package `bin` field.
 
 ## Usage
 

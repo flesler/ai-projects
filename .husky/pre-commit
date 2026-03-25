@@ -30,11 +30,8 @@ if [ -s "$HOME/.nvm/nvm.sh" ]; then
 fi
 
 # Generate documentation and run lint:fix
-npm run docs && npm run lint:fix
+npm run test:full
 if [ $? -ne 0 ]; then
   echo "Checks failed; aborting commit."
   exit 1
 fi
-
-# Auto-add generated files
-git add src/prompts/aip.md
