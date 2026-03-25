@@ -2,9 +2,9 @@
 
 import { spawn } from 'child_process'
 import path from 'path'
-import util from './index.js'
 import config from './config.js'
 import env from './env.js'
+import util from './index.js'
 
 /** Hook types - re-export from config for type safety */
 export type HookType = typeof config.hookTypes[number]
@@ -49,7 +49,7 @@ const hooks = {
     }
 
     const projectDir = context.project
-      ? util.join(env.TEAM_HOME, config.dirs.PROJECTS, context.project)
+      ? util.join(env.AIP_HOME, config.dirs.PROJECTS, context.project)
       : targetDir
     const taskDir = context.task
       ? util.join(projectDir, config.dirs.TASKS, context.task)

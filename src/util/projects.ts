@@ -18,7 +18,7 @@ const projects = {
    * Get project directory path
    */
   getProjectDir(projectSlug: string): string {
-    return util.join(env.TEAM_HOME, config.dirs.PROJECTS, projectSlug)
+    return util.join(env.AIP_HOME, config.dirs.PROJECTS, projectSlug)
   },
 
   /**
@@ -32,14 +32,14 @@ const projects = {
    * Get agent directory path
    */
   getAgentDir(agentSlug: string): string {
-    return util.join(env.TEAM_HOME, config.dirs.AGENTS, agentSlug)
+    return util.join(env.AIP_HOME, config.dirs.AGENTS, agentSlug)
   },
 
   /**
    * List all projects
    */
   async listProjects(): Promise<string[]> {
-    const projectsDir = util.join(env.TEAM_HOME, config.dirs.PROJECTS)
+    const projectsDir = util.join(env.AIP_HOME, config.dirs.PROJECTS)
     const projects = await util.listDir(projectsDir)
     const filtered: string[] = []
     for (const project of projects) {
@@ -68,7 +68,7 @@ const projects = {
    * List all agents
    */
   async listAgents(): Promise<string[]> {
-    const agentsDir = util.join(env.TEAM_HOME, config.dirs.AGENTS)
+    const agentsDir = util.join(env.AIP_HOME, config.dirs.AGENTS)
     const exists = await util.fileExists(agentsDir)
     if (!exists) {
       return []

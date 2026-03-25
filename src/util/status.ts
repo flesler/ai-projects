@@ -1,9 +1,9 @@
 /** Status logging utilities for append-only activity logs */
 
-import util from './index.js'
 import config from './config.js'
-import env from './env.js'
 import ctx from './context.js'
+import env from './env.js'
+import util from './index.js'
 
 const status = {
   /**
@@ -65,7 +65,7 @@ const status = {
     if (!context.project || !context.task) {
       throw new Error('Not in a task directory')
     }
-    const taskDir = util.join(env.TEAM_HOME, config.dirs.PROJECTS, context.project, config.dirs.TASKS, context.task)
+    const taskDir = util.join(env.AIP_HOME, config.dirs.PROJECTS, context.project, config.dirs.TASKS, context.task)
     await this.appendStatus(taskDir, text, agent || this.getCurrentAgent())
   },
 
@@ -77,7 +77,7 @@ const status = {
     if (!project) {
       throw new Error('Not in a project directory')
     }
-    const projectDir = util.join(env.TEAM_HOME, config.dirs.PROJECTS, project)
+    const projectDir = util.join(env.AIP_HOME, config.dirs.PROJECTS, project)
     await this.appendStatus(projectDir, text, agent || this.getCurrentAgent())
   },
 

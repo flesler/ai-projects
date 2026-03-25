@@ -1,11 +1,11 @@
 /** Project/task context from $PWD */
 
 import path from 'path'
-import util from './index.js'
 import config from './config.js'
 import env from './env.js'
+import util from './index.js'
 
-const projectsDir = util.join(env.TEAM_HOME, config.dirs.PROJECTS)
+const projectsDir = util.join(env.AIP_HOME, config.dirs.PROJECTS)
 
 const context = {
   getProjectFromPwd(pwd: string = process.cwd()): string | null {
@@ -88,7 +88,7 @@ const context = {
       if (!project) {
         throw new Error('Not in a project directory. Use --project flag or cd into a project.')
       }
-      const projectDir = util.join(env.TEAM_HOME, config.dirs.PROJECTS, project)
+      const projectDir = util.join(env.AIP_HOME, config.dirs.PROJECTS, project)
       return { targetDir: projectDir, projectDir, entityType: 'project' }
     }
 
@@ -96,19 +96,19 @@ const context = {
       if (!ctx.project || !ctx.task) {
         throw new Error('Not in a task directory. Use --project and --task flags or cd into a task.')
       }
-      const projectDir = util.join(env.TEAM_HOME, config.dirs.PROJECTS, ctx.project)
+      const projectDir = util.join(env.AIP_HOME, config.dirs.PROJECTS, ctx.project)
       const targetDir = util.join(projectDir, config.dirs.TASKS, ctx.task)
       return { targetDir, projectDir, entityType: 'task' }
     }
 
     if (ctx.task && ctx.project) {
-      const projectDir = util.join(env.TEAM_HOME, config.dirs.PROJECTS, ctx.project)
+      const projectDir = util.join(env.AIP_HOME, config.dirs.PROJECTS, ctx.project)
       const targetDir = util.join(projectDir, config.dirs.TASKS, ctx.task)
       return { targetDir, projectDir, entityType: 'task' }
     }
 
     if (ctx.project) {
-      const projectDir = util.join(env.TEAM_HOME, config.dirs.PROJECTS, ctx.project)
+      const projectDir = util.join(env.AIP_HOME, config.dirs.PROJECTS, ctx.project)
       return { targetDir: projectDir, projectDir, entityType: 'project' }
     }
 

@@ -10,7 +10,7 @@ export default defineCommand({
   args: z.object({ name: z.string().describe('Agent name (directory name)') }),
   handler: async ({ name }) => {
     // Look for agent in tmp/hermes/agents/
-    const agentDir = util.join(env.TEAM_HOME, config.dirs.AGENTS, name)
+    const agentDir = util.join(env.AIP_HOME, config.dirs.AGENTS, name)
     const mainFile = util.join(agentDir, config.files.MAIN)
     const soulFile = util.join(agentDir, 'SOUL.md')
 

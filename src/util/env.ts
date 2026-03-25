@@ -2,6 +2,7 @@
 
 import dotenv from 'dotenv'
 import fs from 'fs'
+import os from 'os'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -26,9 +27,6 @@ const findRoot = (): string => {
   return process.cwd()
 }
 
-const ROOT = findRoot()
-dotenv.config({ path: path.join(ROOT, '.env'), quiet: true })
-
 export function optionalString(key: string): string | undefined
 export function optionalString(key: string, defaultValue: string): string
 export function optionalString(key: string, defaultValue?: string): string | undefined {
@@ -48,16 +46,24 @@ export function boolean(key: string, defaultValue = false): boolean {
   return (val === 'true' || val === '1') ?? defaultValue
 }
 
-const defaultTeamHome = path.join(ROOT, 'tmp', 'hermes')
+const ROOT = findRoot()
+let envHome = process.env.AIP_HOME
+if (!envHome) {
+  dotenv.config({ path: path.join(ROOT, '.env'), quiet: true })
+  envHome = process.env.AIP_HOME
+  console.log('envHome', envHome)
+}
+if (envHome?.startsWith('~')) {
+  envHome = path.join(os.homedir(), envHome.slice(1))
+}
+if (!envHome || !path.isAbsolute(envHome)) {
+  throw new Error('AIP_HOME must be set and be an absolute path')
+}
 
 /** Configuration from .env. TEAM_HOME = base (tmp/hermes), projects in TEAM_HOME/projects/ */
 const env = {
   ROOT,
-  TEAM_HOME: process.env.TEAM_HOME
-    ? path.isAbsolute(process.env.TEAM_HOME)
-      ? process.env.TEAM_HOME
-      : path.join(ROOT, process.env.TEAM_HOME)
-    : defaultTeamHome,
+  AIP_HOME: envHome,
   NODE_ENV: optionalString('NODE_ENV', 'development'),
 } as const
 

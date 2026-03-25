@@ -97,7 +97,7 @@ api-integration      API Integration                in-progress builder
 
 **path commands:** Plain path (for cd)
 ```
-/tmp/hermes/projects/api-integration
+/projects/api-integration
 ```
 
 **ingest/start commands:** Formatted context
