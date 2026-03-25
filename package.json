@@ -1,5 +1,5 @@
 {
-  "name": "aip",
+  "name": "ai-projects",
   "version": "1.0.0",
   "type": "module",
   "description": "AI project management CLI - create and manage projects, tasks, and agents",
