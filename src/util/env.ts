@@ -2,9 +2,9 @@
 
 import dotenv from 'dotenv'
 import fs from 'fs'
-import os from 'os'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import config from './config'
 
 const findRoot = (): string => {
   const filename = fileURLToPath(import.meta.url)
@@ -52,19 +52,23 @@ if (!envHome) {
   dotenv.config({ path: path.join(ROOT, '.env'), quiet: true })
   envHome = process.env.AIP_HOME
 }
-if (envHome?.startsWith('~')) {
-  envHome = path.join(os.homedir(), envHome.slice(1))
-}
-if (!envHome || !path.isAbsolute(envHome)) {
-  console.error('AIP_HOME env var must be set and be an absolute path', envHome || '')
-  process.exit(1)
+if (!envHome) {
+  envHome = process.cwd()
+  const candidates = envHome.split(path.sep)
+  for (const dir of [config.dirs.PROJECTS, config.dirs.SKILLS, config.dirs.AGENTS]) {
+    const index = candidates.indexOf(dir)
+    if (index !== -1) {
+      // Detect we are in a sub-dir
+      envHome = candidates.slice(0, index).join(path.sep)
+      break
+    }
+  }
 }
 
 /** Configuration from .env. AIP_HOME = base directory, projects in AIP_HOME/projects/ */
 const env = {
   ROOT,
   AIP_HOME: envHome,
-  NODE_ENV: optionalString('NODE_ENV', 'development'),
 } as const
 
 export default env
