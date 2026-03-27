@@ -1,3 +1,4 @@
+import pkg from '../package.json'
 import commandMap from './commands/index.js'
 import util from './util'
 import type { CommandDef } from './util/defineCommand.js'
@@ -14,6 +15,10 @@ process.on('uncaughtException', (err) => {
 
 async function cli(args: string[]) {
   const [noun, verb, ...rest] = args
+  if (noun === '--version' || noun === '-v') {
+    console.log(pkg.version)
+    process.exit(0)
+  }
   try {
     if (!noun || !util.isKeyOf(noun, commandMap)) {
       await commandMap.help.usage.handler({})

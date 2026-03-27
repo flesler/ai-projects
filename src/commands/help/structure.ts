@@ -8,7 +8,7 @@ File organization for autonomous AI work.
 ## Directory Layout
 
 \`\`\`
-$ROOT/
+$AIP_HOME/
 ├── projects/
 │   ├── {project-slug}/
 │   │   ├── main.md           # Goals, scope, context
@@ -56,6 +56,13 @@ created: YYYY-MM-DD
 ---
 \`\`\`
 
+**Status meanings:**
+- \`pending\` - Not started yet
+- \`in-progress\` - Currently being worked on
+- \`ongoing\` - Recurring or continuous task (should not be auto-completed by AI)
+- \`done\` - Completed
+- \`blocked\` - Waiting on external dependency
+
 ### status.md (Activity Log - Append Only)
 
 **Task updates** (each work session):
@@ -75,6 +82,8 @@ Implemented 5 endpoints with validation. Details: tasks/api-integration/
 - Include timestamp
 - State what's done + what's next
 - Use emojis: 🔄 in-progress | ✅ done | ⚠️ blocked | ❌ failed
+
+**Note:** Tasks with ongoing status are meant for continuous/recurring work. AI agents should not automatically mark these as done - only users should mark them complete when the ongoing work is truly finished.
 
 ### inputs/ (External Data)
 
@@ -148,13 +157,17 @@ aip task create {project} {name} --description "{desc}"
 cd $(aip project path {name})
 cd $(aip task path {project} {task})
 
-# Update
+# Task Lifecycle
+aip task start {project} {task}            # Sets in-progress, outputs cd command
 aip task update {project} {task} --status done
+aip task update {project} {task} --status ongoing
 aip task update {project} {task} --summary "Completed X"
 
 # Context
 aip task ingest {project} {task}   # Full context for AI
 \`\`\`
+
+**Note:** All status changes go through \`task update\`, which runs pre-update/post-update hooks automatically.
 
 ## Best Practices
 

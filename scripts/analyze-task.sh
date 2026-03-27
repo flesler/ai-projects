@@ -15,7 +15,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Script is in: scripts/ (project root)
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-HERMES_ROOT="$PROJECT_ROOT/tmp/hermes"
+HERMES_ROOT="${AIP_HOME:-$PROJECT_ROOT/tmp/hermes}"
 HOOK_PATH="$HERMES_ROOT/projects/aip-core/hooks/post-complete.ts"
 
 # Use npx to run tsx (no global install needed)

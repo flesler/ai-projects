@@ -18,7 +18,7 @@ aip <noun> <verb> [options]
 
 ## For Agents
 
-Read `tmp/hermes/AGENTS.md` first.
+Read `$AIP_HOME/AGENTS.md` first.
 
 ## License
 

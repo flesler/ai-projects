@@ -60,7 +60,7 @@ if (!envHome || !path.isAbsolute(envHome)) {
   process.exit(1)
 }
 
-/** Configuration from .env. TEAM_HOME = base (tmp/hermes), projects in TEAM_HOME/projects/ */
+/** Configuration from .env. AIP_HOME = base directory, projects in AIP_HOME/projects/ */
 const env = {
   ROOT,
   AIP_HOME: envHome,

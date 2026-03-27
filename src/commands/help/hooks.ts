@@ -22,15 +22,30 @@ Automated scripts that run before/after project/task actions.
 ## File Location
 
 \`\`\`
-tmp/hermes/projects/{project}/hooks/
+$AIP_HOME/projects/{project}/hooks/
 ├── pre-complete.ts    # Project-level hook
 └── post-create.sh
 
-tmp/hermes/projects/{project}/tasks/{task}/hooks/
+$AIP_HOME/projects/{project}/tasks/{task}/hooks/
 └── pre-update.py      # Task-level hook
 \`\`\`
 
 **Execution order:** Project hooks first, then task hooks.
+
+## Validation & Automation
+
+Projects can include validation scripts and hooks to enforce folder semantics:
+
+- **\`scripts/validate-structure.sh\`** – Validates folder structure follows conventions
+  - Usage: \`./scripts/validate-structure.sh [project|task] [path]\`
+  - Checks: required files, hook naming, executable permissions
+  - Exit 0 = valid, 1 = errors found
+
+- **\`hooks/pre-complete.sh\`** – Runs before task completion
+  - Validates required files exist
+  - Checks status.md has completion entry
+  - Runs structure validation (warning only)
+  - Exit 1 blocks completion
 
 ## Environment Variables
 
@@ -133,7 +148,7 @@ if lock_file.exists():
 
 \`\`\`bash
 # Test hook manually
-cd tmp/hermes/projects/my-project
+cd $AIP_HOME/projects/my-project
 ./hooks/pre-complete.ts
 
 # Check environment

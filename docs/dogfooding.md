@@ -1,6 +1,6 @@
 # AIP Dogfooding
 
-24x7 autonomous agents. Read **tmp/hermes/AGENTS.md** first. TEAM_HOME=tmp/hermes, projects in TEAM_HOME/projects/.
+24x7 autonomous agents. Read **$AIP_HOME/AGENTS.md** first. Projects in $AIP_HOME/projects/.
 
 ## Projects
 
@@ -38,7 +38,7 @@ pre-create, post-create, pre-update, post-update
 
 **Pre** = can block. **Post** = runs after, can't block. Env: TASK_DIR, PROJECT_DIR, PROJECT_SLUG, TASK_SLUG, HOOK_TYPE.
 
-Creating hooks: `tmp/hermes/skills/hooks.md`
+Creating hooks: `$AIP_HOME/skills/hooks.md`
 
 ## Task Statuses
 
