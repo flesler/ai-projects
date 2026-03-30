@@ -7,8 +7,8 @@ import agentPath from './agent/path.js'
 import agentStart from './agent/start.js'
 import helpApi from './help/api.js'
 import helpHooks from './help/hooks.js'
+import helpQuickstart from './help/quickstart.js'
 import helpSkill from './help/skill.js'
-import helpStructure from './help/structure.js'
 import helpUsage from './help/usage.js'
 import hookCreate from './hook/create.js'
 import hookRun from './hook/run.js'
@@ -40,8 +40,8 @@ const commands = {
   help: {
     api: helpApi,
     hooks: helpHooks,
+    quickstart: helpQuickstart,
     skill: helpSkill,
-    structure: helpStructure,
     usage: helpUsage,
   },
   hook: {

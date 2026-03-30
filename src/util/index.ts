@@ -212,6 +212,11 @@ const util = {
     return Promise.all(list.map(mapper))
   },
 
+  /** Like promiseMap but doesn't return, it's just to await */
+  promiseEach: <T, K>(list: Readonly<T[]>, mapper: (v: T, i: number, a: Readonly<T[]>) => Promise<K> | K): Promise<void> => {
+    return Promise.all(list.map(mapper)).then(() => undefined)
+  },
+
   /** Like _.memoize but all arguments are used as part of the key */
   memoize: <F extends (...args: any[]) => any>(fn: F): F => {
     return _.memoize(fn, util.memoizeKey)

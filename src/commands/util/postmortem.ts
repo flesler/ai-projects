@@ -42,7 +42,6 @@ export default defineCommand({
     console.log(`Task: ${task}`)
     console.log(`Name: ${taskName}`)
     console.log(`Status: ${meta?.status || 'unknown'}`)
-    console.log(`Priority: ${meta?.priority || 'none'}`)
     console.log(`Status updates: ${statusUpdates}`)
 
     if (suggestions.length > 0) {

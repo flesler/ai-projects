@@ -16,6 +16,9 @@ export default defineCommand({
     if (!name) {
       console.log(prefix, 'Usage: aip <noun> <verb> [options]')
       console.log(lines.map(line => `-> ${line}`).join('\n'))
+      console.log()
+      console.log('Run `aip help quickstart` for a quick start guide')
+      console.log('Run `aip help skill` for a broader overview')
     } else {
       const line = lines[0] ?? `${name} {?}`
       console.log(prefix, `Usage: aip ${line} [options]`)
