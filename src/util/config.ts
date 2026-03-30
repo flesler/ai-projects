@@ -8,6 +8,7 @@ export default {
     INPUTS: 'inputs',
     OUTPUTS: 'outputs',
     HOOKS: 'hooks',
+    SCRIPTS: 'scripts',
   },
   files: {
     MAIN: 'main.md',

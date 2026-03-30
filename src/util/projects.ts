@@ -2,15 +2,11 @@
 
 import config from './config.js'
 import env from './env.js'
-import {
-  readFrontmatter,
-  updateFrontmatter,
-  writeFrontmatter,
-  type AgentFrontmatter,
-  type ProjectFrontmatter,
-  type TaskFrontmatter,
-} from './frontmatter.js'
+import { readFrontmatter, updateFrontmatter, writeFrontmatter, type AgentFrontmatter, type ProjectFrontmatter, type TaskFrontmatter } from './frontmatter.js'
 import util from './index.js'
+
+const PROJECT_SUBDIRS = [config.dirs.TASKS, config.dirs.HOOKS, config.dirs.INPUTS, config.dirs.OUTPUTS, config.dirs.SCRIPTS] as const
+const TASK_SUBDIRS = [config.dirs.HOOKS, config.dirs.INPUTS, config.dirs.OUTPUTS, config.dirs.SCRIPTS] as const
 
 const projects = {
   /**
@@ -85,8 +81,9 @@ const projects = {
     const projectDir = this.getProjectDir(slug)
 
     await util.ensureDir(projectDir)
-    await util.ensureDir(util.join(projectDir, config.dirs.TASKS))
-    await util.ensureDir(util.join(projectDir, config.dirs.HOOKS))
+    await Promise.all(
+      PROJECT_SUBDIRS.map(dir => util.ensureDir(util.join(projectDir, dir))),
+    )
 
     await writeFrontmatter(util.join(projectDir, config.files.MAIN), frontmatter)
     await util.write(util.join(projectDir, config.files.STATUS), '')
@@ -105,7 +102,9 @@ const projects = {
     const taskDir = this.getTaskDir(projectSlug, taskSlug)
 
     await util.ensureDir(taskDir)
-    await util.ensureDir(util.join(taskDir, config.dirs.HOOKS))
+    await Promise.all(
+      TASK_SUBDIRS.map(dir => util.ensureDir(util.join(taskDir, dir))),
+    )
 
     await writeFrontmatter(util.join(taskDir, config.files.MAIN), frontmatter)
     await util.write(util.join(taskDir, config.files.STATUS), '')

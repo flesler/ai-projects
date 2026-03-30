@@ -1,4 +1,4 @@
-import { exec as cpExec, spawn as cpSpawn } from 'child_process'
+import { exec as cpExec, spawn } from 'child_process'
 import fs from 'fs/promises'
 import _ from 'lodash'
 import type { Duration, DurationInputObject, MomentInput } from 'moment'
@@ -85,24 +85,12 @@ const util = {
     }
   },
 
-  /** Spawn process: util.spawn(cmd, args, opts?). Returns { stdout, stderr, code }. */
-  async spawn(cmd: string, args: string[] = [], opts?: { cwd?: string; env?: NodeJS.ProcessEnv }): Promise<{ stdout: string; stderr: string; code: number | null }> {
-    return new Promise((resolve, reject) => {
-      const proc = cpSpawn(cmd, args, {
-        stdio: ['ignore', 'pipe', 'pipe'],
-        ...opts,
-      })
-      let stdout = ''
-      let stderr = ''
-      proc.stdout?.on('data', (chunk) => {
-        stdout += chunk
-      })
-      proc.stderr?.on('data', (chunk) => {
-        stderr += chunk
-      })
-      proc.on('close', code => resolve({ stdout, stderr, code }))
-      proc.on('error', reject)
-    })
+  /** Same as `child_process.spawn` — changes cwd only for spawned children when you pass `options.cwd`. */
+  spawn,
+
+  /** Sets this Node process working directory (not the parent shell). See Node `process.chdir`. */
+  cd(dir: string): void {
+    process.chdir(dir)
   },
 
   /** Exec command string (shell). Returns { stdout, stderr, code }. */
