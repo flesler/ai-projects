@@ -5,6 +5,26 @@ import env from './env.js'
 import { readFrontmatter, updateFrontmatter, writeFrontmatter, type AgentFrontmatter, type ProjectFrontmatter, type TaskFrontmatter } from './frontmatter.js'
 import util from './index.js'
 
+/** Task status enumeration */
+export enum TaskStatus {
+  BACKLOG = 'backlog',
+  IN_PROGRESS = 'in-progress',
+  ONGOING = 'ongoing',
+  DONE = 'done',
+  BLOCKED = 'blocked',
+  TO_DO = 'to-do',
+}
+
+/** Helper to get all valid task statuses */
+export const ALL_TASK_STATUSES = Object.values(TaskStatus)
+
+/** Helper to get active (non-terminal) task statuses */
+export const ACTIVE_TASK_STATUSES = [
+  TaskStatus.BACKLOG,
+  TaskStatus.IN_PROGRESS,
+  TaskStatus.ONGOING,
+]
+
 const PROJECT_SUBDIRS = [config.dirs.TASKS, config.dirs.HOOKS, config.dirs.INPUTS, config.dirs.OUTPUTS, config.dirs.SCRIPTS] as const
 const TASK_SUBDIRS = [config.dirs.HOOKS, config.dirs.INPUTS, config.dirs.OUTPUTS, config.dirs.SCRIPTS] as const
 
@@ -24,6 +44,38 @@ const projects = {
   },
 
   /**
+   * Find a task by slug, optionally within a specific project
+   * If projectSlug not provided, searches all projects
+   * Throws if task found in multiple projects (ambiguous)
+   */
+  async findTask(taskSlug: string, projectSlug?: string): Promise<{ project: string; task: string }> {
+    if (projectSlug) {
+      return { project: projectSlug, task: taskSlug }
+    }
+
+    // Search all projects for the task
+    const allProjects = await this.listProjects()
+    const matches: string[] = []
+
+    await util.promiseEach(allProjects, async (project) => {
+      const tasks = await this.listTasks(project)
+      if (tasks.includes(taskSlug)) {
+        matches.push(project)
+      }
+    })
+
+    if (matches.length === 0) {
+      throw new Error(`Task '${taskSlug}' not found. Use --project to specify the project.`)
+    }
+
+    if (matches.length > 1) {
+      throw new Error(`Task '${taskSlug}' found in multiple projects: ${matches.join(', ')}. Use --project to specify which one.`)
+    }
+
+    return { project: matches[0], task: taskSlug }
+  },
+
+  /**
    * Get agent directory path
    */
   getAgentDir(agentSlug: string): string {
@@ -36,15 +88,14 @@ const projects = {
   async listProjects(): Promise<string[]> {
     const projectsDir = util.join(env.AIP_HOME, config.dirs.PROJECTS)
     const projects = await util.listDir(projectsDir)
-    const filtered: string[] = []
-    for (const project of projects) {
+
+    const results = await util.promiseMap(projects, async (project) => {
       const projectDir = this.getProjectDir(project)
       const isDir = await util.fileExists(projectDir)
-      if (isDir && project !== config.dirs.AGENTS) {
-        filtered.push(project)
-      }
-    }
-    return filtered
+      return isDir && project !== config.dirs.AGENTS ? project : null
+    })
+
+    return results.filter((p): p is string => p !== null).sort()
   },
 
   /**
@@ -184,7 +235,7 @@ const projects = {
   ): Promise<Partial<TaskFrontmatter>> {
     const mainPath = util.join(this.getTaskDir(projectSlug, taskSlug), config.files.MAIN)
     const current = await readFrontmatter<TaskFrontmatter>(mainPath)
-    if (current?.status === 'ongoing') {
+    if (current?.status === TaskStatus.ONGOING) {
       throw new Error('Cannot update ongoing task. Should be done by user or update manually')
     }
     return await updateFrontmatter(mainPath, updates)
@@ -211,16 +262,13 @@ const projects = {
    */
   async ingestProject(projectSlug: string): Promise<void> {
     const projectDir = this.getProjectDir(projectSlug)
+    const tasks = await this.listTasks(projectSlug)
 
     const paths = [
       util.join(projectDir, config.files.MAIN),
       util.join(projectDir, config.files.STATUS),
+      ...tasks.map(task => util.join(this.getTaskDir(projectSlug, task), config.files.MAIN)),
     ]
-
-    const tasks = await this.listTasks(projectSlug)
-    for (const taskSlug of tasks) {
-      paths.push(util.join(this.getTaskDir(projectSlug, taskSlug), config.files.MAIN))
-    }
 
     await util.logFiles(...paths)
   },

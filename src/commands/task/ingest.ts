@@ -5,18 +5,19 @@ import projects from '../../util/projects.js'
 
 export default defineCommand({
   description: 'Output full task context (main.md, status.md) for ingestion by agents',
-  options: z.object({}),
+  options: z.object({
+    project: z.string().optional().describe('Project slug (searches all projects if not provided)'),
+  }),
   args: z.object({
-    project: z.string().optional().describe('Project slug (default: from $PWD)'),
     task: z.string().optional().describe('Task slug (default: from $PWD)'),
   }),
   handler: async ({ project, task }) => {
     const context = ctx.getCurrentContext()
-    const projectSlug = project ?? context.project
     const taskSlug = task ?? context.task
-    if (!projectSlug || !taskSlug) {
-      throw new Error('Need project and task (or cd into task dir)')
+    if (!taskSlug) {
+      throw new Error('Need task slug (or cd into task dir)')
     }
+    const { project: projectSlug } = await projects.findTask(taskSlug, project)
     await projects.ingestTask(projectSlug, taskSlug)
   },
 })

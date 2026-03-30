@@ -17,7 +17,6 @@ export interface TaskFrontmatter {
   name: string
   description?: string
   assignee?: string
-  priority?: 'low' | 'medium' | 'high'
   status?: string
   created?: string
 }
