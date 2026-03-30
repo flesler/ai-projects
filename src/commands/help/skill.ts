@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import defineCommand from '../../util/defineCommand.js'
+import pkg from '../../../package.json'
 
 const TEXT = `# AIP - Project Management Skill
 
@@ -133,8 +134,7 @@ created: YYYY-MM-DD
 # Via AIP CLI
 aip project create "optimize-hermes-config" \\
   --description "Analyze and optimize Hermes Agent configuration" \\
-  --assignee basic \\
-  --priority high
+  --assignee basic
 \`\`\`
 
 ### Create New Task in Existing Project
@@ -310,8 +310,38 @@ $AIP_HOME/projects/website-redesign/
 
 export default defineCommand({
   description: 'Project management skill for creating and managing projects/tasks',
-  options: z.object({}),
-  handler: async () => {
-    console.log(TEXT)
+  options: z.object({
+    mode: z.enum(['md', 'claude', 'hermes']).default('md').describe('Output format: md (no header), claude (name+description), hermes (full frontmatter)'),
+  }),
+  handler: async (opts) => {
+    const name = Object.keys(pkg.bin)[0]
+
+    if (opts.mode === 'md') {
+      console.log(TEXT)
+      return
+    }
+
+    if (opts.mode === 'claude') {
+      console.log(`---
+name: ${name}
+description: ${pkg.description}
+---`)
+      console.log()
+      console.log(TEXT)
+      return
+    }
+
+    if (opts.mode === 'hermes') {
+      console.log(`---
+name: ${name}
+description: ${pkg.description}
+version: ${pkg.version}
+author: ${pkg.author}
+license: ${pkg.license}
+---`)
+      console.log()
+      console.log(TEXT)
+      return
+    }
   },
 })
