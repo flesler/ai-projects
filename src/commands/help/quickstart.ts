@@ -23,7 +23,7 @@ ${name} task start
 # → sets status to in-progress
 
 # 5. Work session
-# Log: echo "[timestamp] did X" >> status.md
+# Log progress: ${name} task update --summary "API integration complete"
 # Save: outputs/ to deliver, inputs/ for data
 \`\`\`
 
