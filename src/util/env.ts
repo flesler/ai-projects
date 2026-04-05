@@ -1,31 +1,7 @@
-/** Load .env and read environment variables */
+/** Read environment variables */
 
-import dotenv from 'dotenv'
-import fs from 'fs'
 import path from 'path'
-import { fileURLToPath } from 'url'
 import config from './config'
-
-const findRoot = (): string => {
-  const filename = fileURLToPath(import.meta.url)
-  let currentDir = path.dirname(filename)
-  const maxDepth = 10
-  for (let i = 0; i < maxDepth; i++) {
-    try {
-      if (fs.existsSync(path.join(currentDir, 'package.json'))) {
-        return currentDir
-      }
-      const parentDir = path.dirname(currentDir)
-      if (parentDir === currentDir) {
-        break
-      }
-      currentDir = parentDir
-    } catch {
-      break
-    }
-  }
-  return process.cwd()
-}
 
 export function optionalString(key: string): string | undefined
 export function optionalString(key: string, defaultValue: string): string
@@ -46,12 +22,12 @@ export function boolean(key: string, defaultValue = false): boolean {
   return (val === 'true' || val === '1') ?? defaultValue
 }
 
-const ROOT = findRoot()
+/**
+ * Determine AIP_HOME directory
+ * 1. Use AIP_HOME env var if set (from ~/.bashrc or similar)
+ * 2. Otherwise, auto-detect by traversing up from CWD looking for standard dirs
+ */
 let envHome = process.env.AIP_HOME
-if (!envHome) {
-  dotenv.config({ path: path.join(ROOT, '.env'), quiet: true })
-  envHome = process.env.AIP_HOME
-}
 if (!envHome) {
   envHome = process.cwd()
   const candidates = envHome.split(path.sep)
@@ -65,9 +41,8 @@ if (!envHome) {
   }
 }
 
-/** Configuration from .env. AIP_HOME = base directory, projects in AIP_HOME/projects/ */
+/** Configuration. AIP_HOME = base directory, projects in AIP_HOME/projects/ */
 const env = {
-  ROOT,
   AIP_HOME: envHome,
 } as const
 

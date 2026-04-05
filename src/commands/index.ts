@@ -27,7 +27,6 @@ import taskList from './task/list.js'
 import taskPath from './task/path.js'
 import taskStart from './task/start.js'
 import taskUpdate from './task/update.js'
-import utilPostmortem from './util/postmortem.js'
 import utilRead from './util/read.js'
 
 /** Command map organized by noun and verb */
@@ -74,7 +73,6 @@ const commands = {
     update: taskUpdate,
   },
   util: {
-    postmortem: utilPostmortem,
     read: utilRead,
   },
 } as const

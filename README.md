@@ -66,7 +66,27 @@ aip log append "API integration complete"
 aip log read
 ```
 
+## 🏠 AIP_HOME - Project Root Directory
+
+AIP stores all projects, tasks, and agents under `$AIP_HOME`.
+
+**Set it in your `~/.bashrc` (or `~/.zshrc`):**
+```bash
+export AIP_HOME=/path/to/your/aip-root
+```
+
+**Auto-detection (if `AIP_HOME` is not set):**
+AIP automatically detects the root by traversing up from your current directory looking for standard folders (`projects/`, `skills/`, `agents/`). This means you can `cd` anywhere in your project structure and AIP will find the root.
+
+```bash
+# No setup needed - just run from anywhere in your project
+cd /path/to/aip-root/projects/my-project/tasks/some-task
+aip task list  # Works! AIP detected the root
+```
+
 ## 📁 Project Structure
+
+Once AIP_HOME is determined, the structure is:
 
 ```
 $AIP_HOME/projects/{project}/

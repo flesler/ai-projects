@@ -55,20 +55,7 @@ created: YYYY-MM-DD
 
 ## Body/Content
 
-Markdown after frontmatter. Add via CLI:
-
-\`\`\`bash
-# Using heredoc (multi-line)
-${aip} project create "my-project" --description "..." --body "$(cat <<'EOF'
-# Goals
-- Build X
-- Solve Y
-EOF
-)"
-
-# Update/replace body
-${aip} project update --body "$(cat new-content.md)"
-\`\`\`
+Markdown content after frontmatter. See \`aip help quickstart\` for examples of adding body content via CLI.
 
 ## Best Practices
 
@@ -77,12 +64,7 @@ ${aip} project update --body "$(cat new-content.md)"
 
 ## For Agents
 
-When working on a task:
-1. Read \`main.md\` first (goals/context)
-2. Review \`${LOG}\` (activity history)
-3. Work and save outputs to \`outputs/\`
-4. Log progress: \`${aip} log append "message"\`
-5. On completion: set status=\`done\`, log summary
+Typical workflow: read \`main.md\` for context, check \`${LOG}\` for history, work, and log progress with \`aip log append\`.
 `
 
 export default defineCommand({
