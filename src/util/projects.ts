@@ -29,16 +29,12 @@ const TASK_SUBDIRS = [config.dirs.HOOKS, config.dirs.INPUTS, config.dirs.OUTPUTS
 const PROJECT_SUBDIRS = [config.dirs.TASKS, ...TASK_SUBDIRS] as const
 
 const projects = {
-  /**
-   * Get project directory path
-   */
+  /** Get project directory path */
   getProjectDir(projectSlug: string): string {
     return util.joinHome(config.dirs.PROJECTS, projectSlug)
   },
 
-  /**
-   * Get task directory path
-   */
+  /** Get task directory path */
   getTaskDir(projectSlug: string, taskSlug: string): string {
     return util.join(this.getProjectDir(projectSlug), config.dirs.TASKS, taskSlug)
   },
@@ -75,16 +71,12 @@ const projects = {
     return { project: matches[0], task: taskSlug }
   },
 
-  /**
-   * Get agent directory path
-   */
+  /** Get agent directory path */
   getAgentDir(agentSlug: string): string {
     return util.join(env.AIP_HOME, config.dirs.AGENTS, agentSlug)
   },
 
-  /**
-   * List all projects
-   */
+  /** List all projects */
   async listProjects(): Promise<string[]> {
     const projectsDir = util.join(env.AIP_HOME, config.dirs.PROJECTS)
     const projects = await util.listDir(projectsDir)
@@ -98,9 +90,7 @@ const projects = {
     return results.filter((p): p is string => p !== null).sort()
   },
 
-  /**
-   * List all tasks in a project
-   */
+  /** List all tasks in a project */
   async listTasks(projectSlug: string): Promise<string[]> {
     const tasksDir = util.join(this.getProjectDir(projectSlug), config.dirs.TASKS)
     const exists = await util.fileExists(tasksDir)
@@ -110,9 +100,7 @@ const projects = {
     return await util.listDir(tasksDir)
   },
 
-  /**
-   * List all agents
-   */
+  /** List all agents */
   async listAgents(): Promise<string[]> {
     const agentsDir = util.join(env.AIP_HOME, config.dirs.AGENTS)
     const exists = await util.fileExists(agentsDir)
@@ -122,9 +110,7 @@ const projects = {
     return await util.listDir(agentsDir)
   },
 
-  /**
-   * Create a new project
-   */
+  /** Create a new project */
   async createProject(
     slug: string,
     frontmatter: ProjectFrontmatter,
@@ -143,9 +129,7 @@ const projects = {
     return projectDir
   },
 
-  /**
-   * Create a new task
-   */
+  /** Create a new task */
   async createTask(
     projectSlug: string,
     taskSlug: string,
@@ -165,9 +149,7 @@ const projects = {
     return taskDir
   },
 
-  /**
-   * Create a new agent
-   */
+  /** Create a new agent */
   async createAgent(
     slug: string,
     frontmatter: AgentFrontmatter,
@@ -180,9 +162,7 @@ const projects = {
     return agentDir
   },
 
-  /**
-   * Get project metadata
-   */
+  /** Get project metadata */
   async getProject(projectSlug: string): Promise<Partial<ProjectFrontmatter> | null> {
     const mainPath = util.join(this.getProjectDir(projectSlug), config.files.MAIN)
     const exists = await util.fileExists(mainPath)
@@ -192,9 +172,7 @@ const projects = {
     return await readFrontmatter<ProjectFrontmatter>(mainPath)
   },
 
-  /**
-   * Get task metadata
-   */
+  /** Get task metadata */
   async getTask(projectSlug: string, taskSlug: string): Promise<Partial<TaskFrontmatter> | null> {
     const mainPath = util.join(this.getTaskDir(projectSlug, taskSlug), config.files.MAIN)
     const exists = await util.fileExists(mainPath)
@@ -204,9 +182,7 @@ const projects = {
     return await readFrontmatter<TaskFrontmatter>(mainPath)
   },
 
-  /**
-   * Get agent metadata
-   */
+  /** Get agent metadata */
   async getAgent(agentSlug: string): Promise<Partial<AgentFrontmatter> | null> {
     const mainPath = util.join(this.getAgentDir(agentSlug), config.files.MAIN)
     const exists = await util.fileExists(mainPath)
@@ -216,9 +192,7 @@ const projects = {
     return await readFrontmatter<AgentFrontmatter>(mainPath)
   },
 
-  /**
-   * Update project metadata
-   */
+  /** Update project metadata */
   async updateProject(
     projectSlug: string,
     updates: Partial<ProjectFrontmatter>,
@@ -227,9 +201,7 @@ const projects = {
     return await updateFrontmatter(mainPath, updates)
   },
 
-  /**
-   * Update project/task body (content after frontmatter)
-   */
+  /** Update project/task body (content after frontmatter) */
   async updateBody(
     filePath: string,
     body: string,
@@ -244,9 +216,7 @@ const projects = {
     await writeFrontmatter(filePath, parsed.frontmatter as AnyFrontmatter, body)
   },
 
-  /**
-   * Update task metadata
-   */
+  /** Update task metadata */
   async updateTask(
     projectSlug: string,
     taskSlug: string,
@@ -260,9 +230,7 @@ const projects = {
     return await updateFrontmatter(mainPath, updates)
   },
 
-  /**
-   * Read all files in a task for context ingestion
-   */
+  /** Read all files in a task for context ingestion */
   async ingestTask(projectSlug: string, taskSlug: string): Promise<void> {
     const taskDir = this.getTaskDir(projectSlug, taskSlug)
     const projectDir = this.getProjectDir(projectSlug)
@@ -276,9 +244,7 @@ const projects = {
     await util.logFiles(...paths)
   },
 
-  /**
-   * Read all files in a project for context ingestion
-   */
+  /** Read all files in a project for context ingestion */
   async ingestProject(projectSlug: string): Promise<void> {
     const projectDir = this.getProjectDir(projectSlug)
     const tasks = await this.listTasks(projectSlug)
@@ -292,9 +258,7 @@ const projects = {
     await util.logFiles(...paths)
   },
 
-  /**
-   * Read multiple files for context ingestion
-   */
+  /** Read multiple files for context ingestion */
   async ingestFiles(filePaths: string[]): Promise<void> {
     await util.logFiles(...filePaths)
   },

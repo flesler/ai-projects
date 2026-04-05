@@ -17,9 +17,7 @@ export interface HookContext {
 }
 
 const hooks = {
-  /**
-   * Find all hooks of a given type in a directory.
-   */
+  /** Find all hooks of a given type in a directory. */
   async findHooks(directory: string, hookType: HookType): Promise<string[]> {
     const hooksDir = util.join(directory, config.dirs.HOOKS)
     const exists = await util.fileExists(hooksDir)
@@ -34,9 +32,7 @@ const hooks = {
       .map(f => util.join(hooksDir, f))
   },
 
-  /**
-   * Execute a hook script.
-   */
+  /** Execute a hook script. */
   async executeHook(
     hookPath: string,
     context: HookContext,
@@ -88,9 +84,7 @@ const hooks = {
     })
   },
 
-  /**
-   * Run all hooks of a given type for a project/task
-   */
+  /** Run all hooks of a given type for a project/task */
   async runHooks(
     directory: string,
     hookType: HookType,
@@ -109,9 +103,7 @@ const hooks = {
     return true
   },
 
-  /**
-   * Run hooks for both project and task levels
-   */
+  /** Run hooks for both project and task levels */
   async runHooksForContext(
     projectDir: string,
     taskDir: string | undefined,

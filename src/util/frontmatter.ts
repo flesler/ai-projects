@@ -51,18 +51,14 @@ export const parseFrontmatter = <T extends AnyFrontmatter>(content: string): { f
   return { frontmatter, content: match[2].trim() }
 }
 
-/**
- * Write frontmatter + content to markdown
- */
+/** Write frontmatter + content to markdown */
 export const writeFrontmatter = async (filePath: string, frontmatter: AnyFrontmatter, content: string = ''): Promise<void> => {
   const yamlContent = yaml.stringify(frontmatter).trim()
   const markdown = `---\n${yamlContent}\n---\n\n${content}`.trim()
   await util.write(filePath, markdown + '\n')
 }
 
-/**
- * Update specific frontmatter fields in a file
- */
+/** Update specific frontmatter fields in a file */
 export const updateFrontmatter = async <T extends AnyFrontmatter>(
   filePath: string,
   updates: Partial<T>,
@@ -79,9 +75,7 @@ export const updateFrontmatter = async <T extends AnyFrontmatter>(
   return updated
 }
 
-/**
- * Read and parse frontmatter from a file
- */
+/** Read and parse frontmatter from a file */
 export const readFrontmatter = async <T extends AnyFrontmatter>(filePath: string): Promise<Partial<T>> => {
   const content = await util.read(filePath)
   const parsed = parseFrontmatter<T>(content)

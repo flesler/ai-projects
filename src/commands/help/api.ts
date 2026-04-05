@@ -1,6 +1,4 @@
-/**
- * Generate documentation for all CLI commands (printed to console)
- */
+/** Generate documentation for all CLI commands (printed to console) */
 
 import { z, type ZodType } from 'zod'
 import defineCommand from '../../util/defineCommand.js'

@@ -5,9 +5,7 @@ import ctx from './context.js'
 import util from './index.js'
 
 const log = {
-  /**
-   * Format a TSV entry: date\ttime\tentityType\slug\action\text
-   */
+  /** Format a TSV entry: date\ttime\tentityType\slug\action\text */
   formatEntry(entityType: string, slug: string, action: string, text: string): string {
     const now = new Date()
     const year = now.getFullYear()
@@ -29,9 +27,7 @@ const log = {
     await util.append(logPath, entry)
   },
 
-  /**
-   * Read log history from log.tsv
-   */
+  /** Read log history from log.tsv */
   async read(directory: string): Promise<string> {
     const logPath = util.join(directory, config.files.LOG)
     const exists = await util.fileExists(logPath)
@@ -41,9 +37,7 @@ const log = {
     return await util.read(logPath)
   },
 
-  /**
-   * Log to current task's log.tsv
-   */
+  /** Log to current task's log.tsv */
   async task(slug: string, text: string, agent?: string): Promise<void> {
     const context = ctx.getCurrentContext()
     if (!context.project || !context.task) {
@@ -53,9 +47,7 @@ const log = {
     await this.append(taskDir, 'task', slug, 'log', agent ? `${agent}: ${text}` : text)
   },
 
-  /**
-   * Log to current project's log.tsv
-   */
+  /** Log to current project's log.tsv */
   async project(slug: string, text: string, agent?: string): Promise<void> {
     const project = ctx.getProjectFromPwd()
     if (!project) {
