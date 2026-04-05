@@ -13,7 +13,7 @@ export default defineCommand({
     status: z.string().optional().describe('New status'),
     assignee: z.string().optional().describe('New assignee'),
     project: z.string().optional().describe('Project slug (searches all projects if not provided)'),
-    summary: z.string().optional().describe('Optional summary to append to status.md'),
+    summary: z.string().optional().describe('Override the default summary line to append to status.md'),
   }),
   args: z.object({
     task: z.string().optional().describe('Task slug (default: from $PWD)'),
@@ -27,13 +27,10 @@ export default defineCommand({
 
     const { project: projectSlug } = await projects.findTask(taskSlug, project)
     const taskDir = projects.getTaskDir(projectSlug, taskSlug)
-
+    const projectDir = projects.getProjectDir(projectSlug)
     // Run pre-update hooks
     const preHookSuccess = await hooks.runHooksForContext(
-      projects.getProjectDir(projectSlug),
-      taskDir,
-      'pre-update',
-      {
+      projectDir, taskDir, 'pre-update', {
         action: 'pre-update',
         entityType: 'task',
         project: projectSlug,
@@ -69,8 +66,15 @@ export default defineCommand({
     }
 
     // Append summary if provided
-    if (summary) {
-      await status.appendStatus(taskDir, summary)
+    let summaryLine = summary
+    if (!summary && (updates.status || updates.assignee)) {
+      summaryLine = `Updated: ${updates.status ? ` status to ${updates.status}` : ''}${updates.assignee ? ` assignee to ${updates.assignee}` : ''}`
+    }
+    if (summaryLine) {
+      await status.appendStatus(taskDir, summaryLine)
+    }
+    if (updates.status) {
+      await status.appendStatus(projectDir, `Task updated: ${taskSlug} > status to ${updates.status}`)
     }
 
     // Run post-update hooks

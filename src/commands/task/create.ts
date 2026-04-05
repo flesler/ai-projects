@@ -11,21 +11,20 @@ export default defineCommand({
     description: z.string().optional().describe('Task description'),
     assignee: z.string().optional().describe('Assignee agent slug'),
     status: z.string().default(TaskStatus.BACKLOG).describe('Initial status'),
+    summary: z.string().optional().describe('Override the default summary line to append to status.md'),
   }),
   args: z.object({
     project: z.string().describe('Project slug'),
     name: z.string().describe('Task name'),
   }),
-  handler: async ({ project, name, description, assignee, status }) => {
+  handler: async ({ project, name, description, assignee, status, summary }) => {
     const slug = util.slugify(name)
 
     // Run pre-create hooks
+    const projectDir = projects.getProjectDir(project)
     const taskDir = projects.getTaskDir(project, slug)
     const preHookSuccess = await hooks.runHooksForContext(
-      projects.getProjectDir(project),
-      taskDir,
-      'pre-create',
-      {
+      projectDir, taskDir, 'pre-create', {
         action: 'pre-create',
         entityType: 'task',
         project,
@@ -38,22 +37,16 @@ export default defineCommand({
 
     // Create task
     await projects.createTask(project, slug, {
-      name,
-      description,
-      assignee,
-      status,
-      created: new Date().toISOString(),
+      name, description, assignee, status, created: new Date().toISOString(),
     })
 
     // Log creation
-    await statusUtil.appendStatus(taskDir, `Task created: ${name}`)
+    await statusUtil.appendStatus(taskDir, summary || `Created: ${name}`)
+    await statusUtil.appendStatus(projectDir, `Task created: ${slug} > status is ${status}`)
 
     // Run post-create hooks
     await hooks.runHooksForContext(
-      projects.getProjectDir(project),
-      taskDir,
-      'post-create',
-      {
+      projectDir, taskDir, 'post-create', {
         action: 'post-create',
         entityType: 'task',
         project,
