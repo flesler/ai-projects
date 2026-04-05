@@ -12,8 +12,7 @@ export default {
   },
   files: {
     MAIN: 'main.md',
-    STATUS: 'status.tsv',
-    LOG: 'audit.log',
+    LOG: 'log.tsv',
     SKILL: 'SKILL.md',
   },
   hookTypes: [

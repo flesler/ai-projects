@@ -2,7 +2,7 @@
 
 import config from './config.js'
 import env from './env.js'
-import { readFrontmatter, updateFrontmatter, writeFrontmatter, type AgentFrontmatter, type ProjectFrontmatter, type TaskFrontmatter } from './frontmatter.js'
+import { parseFrontmatter, readFrontmatter, updateFrontmatter, writeFrontmatter, type AgentFrontmatter, type AnyFrontmatter, type ProjectFrontmatter, type TaskFrontmatter } from './frontmatter.js'
 import util from './index.js'
 
 /** Task status enumeration */
@@ -128,6 +128,7 @@ const projects = {
   async createProject(
     slug: string,
     frontmatter: ProjectFrontmatter,
+    body?: string,
   ): Promise<string> {
     const projectDir = this.getProjectDir(slug)
 
@@ -136,8 +137,8 @@ const projects = {
       PROJECT_SUBDIRS.map(dir => util.ensureDir(util.join(projectDir, dir))),
     )
 
-    await writeFrontmatter(util.join(projectDir, config.files.MAIN), frontmatter)
-    await util.write(util.join(projectDir, config.files.STATUS), '')
+    await writeFrontmatter(util.join(projectDir, config.files.MAIN), frontmatter, body)
+    await util.write(util.join(projectDir, config.files.LOG), '')
 
     return projectDir
   },
@@ -149,6 +150,7 @@ const projects = {
     projectSlug: string,
     taskSlug: string,
     frontmatter: TaskFrontmatter,
+    body?: string,
   ): Promise<string> {
     const taskDir = this.getTaskDir(projectSlug, taskSlug)
 
@@ -157,8 +159,8 @@ const projects = {
       TASK_SUBDIRS.map(dir => util.ensureDir(util.join(taskDir, dir))),
     )
 
-    await writeFrontmatter(util.join(taskDir, config.files.MAIN), frontmatter)
-    await util.write(util.join(taskDir, config.files.STATUS), '')
+    await writeFrontmatter(util.join(taskDir, config.files.MAIN), frontmatter, body)
+    await util.write(util.join(taskDir, config.files.LOG), '')
 
     return taskDir
   },
@@ -226,6 +228,23 @@ const projects = {
   },
 
   /**
+   * Update project/task body (content after frontmatter)
+   */
+  async updateBody(
+    filePath: string,
+    body: string,
+  ): Promise<void> {
+    const content = await util.read(filePath)
+    const parsed = parseFrontmatter<AnyFrontmatter>(content)
+
+    if (!parsed) {
+      throw new Error(`No frontmatter found in ${filePath}`)
+    }
+
+    await writeFrontmatter(filePath, parsed.frontmatter as AnyFrontmatter, body)
+  },
+
+  /**
    * Update task metadata
    */
   async updateTask(
@@ -251,7 +270,7 @@ const projects = {
     const paths = [
       util.join(projectDir, config.files.MAIN),
       util.join(taskDir, config.files.MAIN),
-      util.join(taskDir, config.files.STATUS),
+      util.join(taskDir, config.files.LOG),
     ]
 
     await util.logFiles(...paths)
@@ -266,7 +285,7 @@ const projects = {
 
     const paths = [
       util.join(projectDir, config.files.MAIN),
-      util.join(projectDir, config.files.STATUS),
+      util.join(projectDir, config.files.LOG),
       ...tasks.map(task => util.join(this.getTaskDir(projectSlug, task), config.files.MAIN)),
     ]
 

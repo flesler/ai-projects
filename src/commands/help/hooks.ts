@@ -43,7 +43,7 @@ Projects can include validation scripts and hooks to enforce folder semantics:
 
 - **\`hooks/pre-complete.sh\`** – Runs before task completion
   - Validates required files exist
-  - Checks status.tsv has completion entry
+  - Checks log.tsv has completion entry
   - Runs structure validation (warning only)
   - Exit 1 blocks completion
 
@@ -93,10 +93,10 @@ if (!content.includes('description:')) {
   process.exit(1)
 }
 
-// Require status update
-const statusPath = join(taskDir, 'status.tsv')
-if (!existsSync(statusPath) || readFileSync(statusPath, 'utf-8').length === 0) {
-  console.error('❌ status.tsv is empty')
+// Require log update
+const logPath = join(taskDir, config.files.LOG)
+if (!existsSync(logPath) || readFileSync(logPath, 'utf-8').length === 0) {
+  console.error('❌ log.tsv is empty')
   process.exit(1)
 }
 \`\`\`
@@ -164,7 +164,7 @@ DEBUG=1 aip task update --status done
 - Require tests before completion
 - Check outputs exist
 - Validate frontmatter fields
-- Ensure status.tsv updated
+- Ensure log.tsv updated
 
 ### Automation
 - Backup before changes

@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import defineCommand from '../../util/defineCommand.js'
 import projects from '../../util/projects.js'
-import status from '../../util/status.js'
+import log from '../../util/log.js'
 
 export default defineCommand({
   description: 'Post-mortem analysis for a completed task',
@@ -15,17 +15,17 @@ export default defineCommand({
 
     // Read task metadata
     const meta = await projects.getTask(project, task)
-    const statusLog = await status.readStatus(taskDir)
+    const taskLog = await log.read(taskDir)
 
-    // Count status updates (rough proxy for complexity)
-    const statusUpdates = statusLog.split('\n').filter(l => l.startsWith('[')).length
+    // Count log entries (rough proxy for complexity)
+    const logEntries = taskLog.split('\n').filter(l => l.trim()).length
 
     // Analyze patterns
     const suggestions: string[] = []
     const taskName = meta?.name || task
 
-    if (statusUpdates > 5) {
-      suggestions.push('High status update count - consider breaking into smaller tasks')
+    if (logEntries > 5) {
+      suggestions.push('High log entry count - consider breaking into smaller tasks')
     }
 
     if (taskName.toLowerCase().includes('implement')) {
@@ -42,7 +42,7 @@ export default defineCommand({
     console.log(`Task: ${task}`)
     console.log(`Name: ${taskName}`)
     console.log(`Status: ${meta?.status || 'unknown'}`)
-    console.log(`Status updates: ${statusUpdates}`)
+    console.log(`Log entries: ${logEntries}`)
 
     if (suggestions.length > 0) {
       console.log(`\nSuggestions:`)

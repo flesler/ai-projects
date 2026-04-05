@@ -3,20 +3,21 @@ import defineCommand from '../../util/defineCommand.js'
 import hooks from '../../util/hooks.js'
 import util from '../../util/index.js'
 import projects, { TaskStatus } from '../../util/projects.js'
-import statusUtil from '../../util/status.js'
+import logUtil from '../../util/log.js'
 
 export default defineCommand({
-  description: 'Create a new task with assignee and initial status',
+  description: 'Create a new task with assignee, initial status and optional body',
   options: z.object({
     description: z.string().optional().describe('Task description'),
     assignee: z.string().optional().describe('Assignee agent slug'),
     status: z.string().default(TaskStatus.BACKLOG).describe('Initial status'),
+    body: z.string().optional().describe('Initial body/content (markdown)'),
   }),
   args: z.object({
     project: z.string().describe('Project slug'),
     name: z.string().describe('Task name'),
   }),
-  handler: async ({ project, name, description, assignee, status }) => {
+  handler: async ({ project, name, description, assignee, status, body }) => {
     const slug = util.slugify(name)
 
     // Run pre-create hooks
@@ -37,11 +38,11 @@ export default defineCommand({
     // Create task
     await projects.createTask(project, slug, {
       name, description, assignee, status, created: new Date().toISOString(),
-    })
+    }, body)
 
     // Log creation
-    await statusUtil.appendStatus(taskDir, 'task', slug, 'created', name)
-    await statusUtil.appendStatus(projectDir, 'task', slug, 'created', `status is ${status}`)
+    await logUtil.append(taskDir, 'task', slug, 'created', name)
+    await logUtil.append(projectDir, 'task', slug, 'created', `${slug} > status is ${status}`)
 
     // Run post-create hooks
     await hooks.runHooksForContext(

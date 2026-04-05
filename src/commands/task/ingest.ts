@@ -4,7 +4,7 @@ import defineCommand from '../../util/defineCommand.js'
 import projects from '../../util/projects.js'
 
 export default defineCommand({
-  description: 'Output full task context (main.md, status.tsv) for ingestion by agents',
+  description: 'Output full task context (main.md, log.tsv) for ingestion by agents',
   options: z.object({
     project: z.string().optional().describe('Project slug (searches all projects if not provided)'),
   }),

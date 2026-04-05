@@ -6,7 +6,7 @@ import { TaskStatus } from '../../util/projects.js'
 
 const statusList = Object.values(TaskStatus).join('|')
 const { PROJECTS, TASKS, HOOKS, INPUTS, OUTPUTS, SCRIPTS } = config.dirs
-const { MAIN, STATUS } = config.files
+const { MAIN, LOG } = config.files
 const aip = Object.keys(pkg.bin)[0]
 
 const TEXT = `# AIP - Project Management Skill
@@ -28,16 +28,16 @@ Streamline creation of new projects and tasks with the correct directory structu
 
 \`\`\`
 $AIP_HOME/${PROJECTS}/{project-slug}/
-├── ${MAIN}\t# Primary context: goals, scope, data
-├── ${STATUS}\t# Chronological log (TSV: date, time, entityType, slug, action, text)
+├── ${MAIN}\t# Goals + body (YAML frontmatter + markdown content)
+├── ${LOG}\t# Chronological log (TSV: date, time, entityType, slug, action, text)
 ├── ${HOOKS}/\t\t# pre|post-{create,start,update,complete}.*
 ├── ${OUTPUTS}/\t# Deliverables
 ├── ${INPUTS}/\t# External data
 ├── ${SCRIPTS}/\t# Automation
 └── ${TASKS}/
 \t└── {task-slug}/
-\t\t├── ${MAIN}\t# Task definition
-\t\t├── ${STATUS}\t# Activity log
+\t\t├── ${MAIN}\t# Task definition + body
+\t\t├── ${LOG}\t# Activity log
 \t\t└── ... (same structure)
 \`\`\`
 
@@ -53,6 +53,23 @@ created: YYYY-MM-DD
 ---
 \`\`\`
 
+## Body/Content
+
+Markdown after frontmatter. Add via CLI:
+
+\`\`\`bash
+# Using heredoc (multi-line)
+${aip} project create "my-project" --description "..." --body "$(cat <<'EOF'
+# Goals
+- Build X
+- Solve Y
+EOF
+)"
+
+# Update/replace body
+${aip} project update --body "$(cat new-content.md)"
+\`\`\`
+
 ## Best Practices
 
 **DO:** Concise status entries, update every session, save deliverables to outputs/
@@ -62,7 +79,7 @@ created: YYYY-MM-DD
 
 When working on a task:
 1. Read \`main.md\` first (goals/context)
-2. Review \`status.tsv\` (activity history)
+2. Review \`${LOG}\` (activity history)
 3. Work and save outputs to \`outputs/\`
 4. Log progress: \`${aip} log append "message"\`
 5. On completion: set status=\`done\`, log summary
