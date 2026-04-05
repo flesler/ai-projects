@@ -69,6 +69,10 @@ $AIP_HOME/projects/slug/
 
 **Status format:** TSV with columns: date, time, entityType, slug, action, text
 **Example:** \`2026-03-30<TAB>14:30:00<TAB>task<TAB>api-integration<TAB>log<TAB>API integration complete\`
+
+## Commands
+
+Run \`${aip} help usage\` for all commands.
 `
 
 export default defineCommand({
