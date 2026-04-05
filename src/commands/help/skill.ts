@@ -1,8 +1,8 @@
 import { z } from 'zod'
-import defineCommand from '../../util/defineCommand.js'
 import pkg from '../../../package.json'
-import { TaskStatus } from '../../util/projects.js'
 import config from '../../util/config.js'
+import defineCommand from '../../util/defineCommand.js'
+import { TaskStatus } from '../../util/projects.js'
 
 const statusList = Object.values(TaskStatus).join('|')
 const { PROJECTS, TASKS, HOOKS, INPUTS, OUTPUTS, SCRIPTS } = config.dirs
@@ -191,6 +191,9 @@ description: ${pkg.description}
 version: ${pkg.version}
 author: ${pkg.author}
 license: ${pkg.license}
+metadata:
+  hermes:
+    tags: [${pkg.keywords.join(', ')}]
 ---`)
       console.log()
       console.log(TEXT)

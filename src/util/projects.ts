@@ -25,8 +25,8 @@ export const ACTIVE_TASK_STATUSES = [
   TaskStatus.ONGOING,
 ]
 
-const PROJECT_SUBDIRS = [config.dirs.TASKS, config.dirs.HOOKS, config.dirs.INPUTS, config.dirs.OUTPUTS, config.dirs.SCRIPTS] as const
 const TASK_SUBDIRS = [config.dirs.HOOKS, config.dirs.INPUTS, config.dirs.OUTPUTS, config.dirs.SCRIPTS] as const
+const PROJECT_SUBDIRS = [config.dirs.TASKS, ...TASK_SUBDIRS] as const
 
 const projects = {
   /**

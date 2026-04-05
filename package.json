@@ -50,11 +50,13 @@
   },
   "keywords": [
     "ai",
-    "project-management",
-    "task-management",
+    "aip",
+    "project",
+    "task",
+    "kanban",
     "cli",
-    "hermes-agent",
-    "autonomous-agents"
+    "agent",
+    "automation"
   ],
   "author": "Ariel Flesler <aflesler@gmail.com>",
   "license": "MIT",
