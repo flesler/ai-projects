@@ -7,6 +7,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import type { InspectOptions } from 'util'
 import { inspect as utilInspect } from 'util'
+import env from './env.js'
 
 const util = {
   // Relative to the project root
@@ -20,6 +21,11 @@ const util = {
     return util.join(util.REPO, ...segments)
   },
 
+  /** Join path starting from AIP_HOME */
+  joinHome: (...segments: string[]): string => {
+    return util.join(env.AIP_HOME, ...segments)
+  },
+
   /** Ensure directory exists */
   async ensureDir(dirPath: string): Promise<void> {
     await fs.mkdir(dirPath, { recursive: true })
@@ -29,6 +35,12 @@ const util = {
   async write(filePath: string, content: string): Promise<void> {
     await util.ensureDir(path.dirname(filePath))
     await fs.writeFile(filePath, content, 'utf8')
+  },
+
+  /** Append to file, creating parent directories if needed */
+  async append(filePath: string, content: string): Promise<void> {
+    await util.ensureDir(path.dirname(filePath))
+    await fs.appendFile(filePath, content, 'utf8')
   },
 
   /** Read file */

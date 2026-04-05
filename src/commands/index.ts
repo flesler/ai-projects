@@ -12,6 +12,8 @@ import helpSkill from './help/skill.js'
 import helpUsage from './help/usage.js'
 import hookCreate from './hook/create.js'
 import hookRun from './hook/run.js'
+import logAppend from './log/append.js'
+import logRead from './log/read.js'
 import projectCreate from './project/create.js'
 import projectCurrent from './project/current.js'
 import projectList from './project/list.js'
@@ -47,6 +49,10 @@ const commands = {
   hook: {
     create: hookCreate,
     run: hookRun,
+  },
+  log: {
+    append: logAppend,
+    read: logRead,
   },
   project: {
     create: projectCreate,

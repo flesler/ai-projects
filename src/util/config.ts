@@ -12,7 +12,7 @@ export default {
   },
   files: {
     MAIN: 'main.md',
-    STATUS: 'status.md',
+    STATUS: 'status.tsv',
     LOG: 'audit.log',
     SKILL: 'SKILL.md',
   },

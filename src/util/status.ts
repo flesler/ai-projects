@@ -1,45 +1,47 @@
-/** Status logging utilities for append-only activity logs */
+/** Status logging utilities for append-only TSV activity logs */
 
 import config from './config.js'
 import ctx from './context.js'
-import env from './env.js'
 import util from './index.js'
 
 const status = {
   /**
-   * Standardized log format: timestamp | agent | text
+   * Format a TSV entry: date\ttime\tentityType\slug\action\text
    */
-  formatLogEntry(text: string, agent?: string): string {
-    const timestamp = new Date().toISOString().replace('T', ' ').replace(/\.\d{3}Z$/, '')
-    const agentPart = agent ? ` | ${agent}` : ''
-    return `[${timestamp}${agentPart}] ${text}\n`
+  formatEntry(entityType: string, slug: string, action: string, text: string): string {
+    const now = new Date()
+    const date = now.toISOString().split('T')[0]
+    const time = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    return `${date}\t${time}\t${entityType}\t${slug}\t${action}\t${text}\n`
   },
 
   /**
-   * Append a standardized entry to status.md
+   * Append a TSV entry to status.tsv
+   * Columns: dateTime, entityType, slug, action, text (tab-separated, no headers)
+   * Action types: created, updated, log
    */
-  async appendStatus(directory: string, text: string, agent?: string): Promise<void> {
+  async appendStatus(directory: string, entityType: string, slug: string, action: string, text: string): Promise<void> {
     const statusPath = util.join(directory, config.files.STATUS)
-    const logEntry = this.formatLogEntry(text, agent)
-    await util.write(statusPath, logEntry)
+    const entry = this.formatEntry(entityType, slug, action, text)
+    await util.append(statusPath, entry)
   },
 
   /**
-   * Append to status.md only if it exists
+   * Append to status.tsv only if it exists
    */
-  async appendStatusIfExists(directory: string, text: string, agent?: string): Promise<boolean> {
+  async appendStatusIfExists(directory: string, entityType: string, slug: string, action: string, text: string): Promise<boolean> {
     const statusPath = util.join(directory, config.files.STATUS)
     const exists = await util.fileExists(statusPath)
     if (!exists) {
       return false
     }
-    const logEntry = this.formatLogEntry(text, agent)
-    await util.write(statusPath, logEntry)
+    const entry = this.formatEntry(entityType, slug, action, text)
+    await util.append(statusPath, entry)
     return true
   },
 
   /**
-   * Read status history from status.md
+   * Read status history from status.tsv
    */
   async readStatus(directory: string): Promise<string> {
     const statusPath = util.join(directory, config.files.STATUS)
@@ -58,48 +60,50 @@ const status = {
   },
 
   /**
-   * Log to current task's status.md
+   * Log to current task's status.tsv
    */
-  async logTask(text: string, agent?: string): Promise<void> {
+  async logTask(slug: string, text: string, agent?: string): Promise<void> {
     const context = ctx.getCurrentContext()
     if (!context.project || !context.task) {
       throw new Error('Not in a task directory')
     }
-    const taskDir = util.join(env.AIP_HOME, config.dirs.PROJECTS, context.project, config.dirs.TASKS, context.task)
-    await this.appendStatus(taskDir, text, agent || this.getCurrentAgent())
+    const taskDir = util.joinHome(config.dirs.PROJECTS, context.project, config.dirs.TASKS, context.task)
+    await this.appendStatus(taskDir, 'task', slug, 'log', agent ? `${agent}: ${text}` : text)
   },
 
   /**
-   * Log to current project's status.md
+   * Log to current project's status.tsv
    */
-  async logProject(text: string, agent?: string): Promise<void> {
+  async logProject(slug: string, text: string, agent?: string): Promise<void> {
     const project = ctx.getProjectFromPwd()
     if (!project) {
       throw new Error('Not in a project directory')
     }
-    const projectDir = util.join(env.AIP_HOME, config.dirs.PROJECTS, project)
-    await this.appendStatus(projectDir, text, agent || this.getCurrentAgent())
+    const projectDir = util.joinHome(config.dirs.PROJECTS, project)
+    await this.appendStatus(projectDir, 'project', slug, 'log', agent ? `${agent}: ${text}` : text)
   },
 
   /**
-   * Log a status change with optional summary
+   * Log a status change with optional details
    */
   async logStatusChange(
     directory: string,
-    action: string,
+    entityType: string,
+    slug: string,
+    changeAction: string,
     details?: Record<string, any>,
     agent?: string,
   ): Promise<void> {
-    let entry = action
+    let entry = changeAction
 
     if (details && Object.keys(details).length > 0) {
       const detailStr = Object.entries(details)
         .map(([key, value]) => `${key}=${value}`)
         .join(', ')
-      entry = `${action}: ${detailStr}`
+      entry = `${changeAction}: ${detailStr}`
     }
 
-    await this.appendStatus(directory, entry, agent)
+    await this.appendStatus(directory, entityType, slug, 'updated', agent ? `${agent} | ${entry}` : entry)
   },
 }
 

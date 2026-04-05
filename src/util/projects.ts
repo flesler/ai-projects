@@ -33,7 +33,7 @@ const projects = {
    * Get project directory path
    */
   getProjectDir(projectSlug: string): string {
-    return util.join(env.AIP_HOME, config.dirs.PROJECTS, projectSlug)
+    return util.joinHome(config.dirs.PROJECTS, projectSlug)
   },
 
   /**

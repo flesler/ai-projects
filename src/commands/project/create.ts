@@ -11,12 +11,11 @@ export default defineCommand({
     description: z.string().describe('Project description'),
     status: z.string().default('active').describe('Initial status'),
     assignee: z.string().optional().describe('Assignee agent slug'),
-    summary: z.string().optional().describe('Override the default summary line to append to status.md'),
   }),
   args: z.object({
     name: z.string().describe('Project name'),
   }),
-  handler: async ({ name, description, status, assignee, summary }) => {
+  handler: async ({ name, description, status, assignee }) => {
     const slug = util.slugify(name)
 
     // Run pre-create hooks
@@ -36,7 +35,7 @@ export default defineCommand({
     })
 
     // Log creation
-    await statusUtil.appendStatus(projectDir, summary || `Project created: ${name} > status is ${status}`)
+    await statusUtil.appendStatus(projectDir, 'project', slug, 'created', `status is ${status}`)
 
     // Run post-create hooks
     await hooks.runHooks(projectDir, 'post-create', {

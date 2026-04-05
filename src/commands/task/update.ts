@@ -6,19 +6,18 @@ import projects from '../../util/projects.js'
 import status from '../../util/status.js'
 
 export default defineCommand({
-  description: 'Update task properties: name, description, status, assignee, or append summary',
+  description: 'Update task properties: name, description, status, assignee',
   options: z.object({
     name: z.string().optional().describe('New name'),
     description: z.string().optional().describe('New description'),
     status: z.string().optional().describe('New status'),
     assignee: z.string().optional().describe('New assignee'),
     project: z.string().optional().describe('Project slug (searches all projects if not provided)'),
-    summary: z.string().optional().describe('Override the default summary line to append to status.md'),
   }),
   args: z.object({
     task: z.string().optional().describe('Task slug (default: from $PWD)'),
   }),
-  handler: async ({ project, task, name, description, status: newStatus, assignee, summary }) => {
+  handler: async ({ project, task, name, description, status: newStatus, assignee }) => {
     const context = ctx.getCurrentContext()
     const taskSlug = task ?? context.task
     if (!taskSlug) {
@@ -49,7 +48,7 @@ export default defineCommand({
     if (newStatus) updates.status = newStatus
     if (assignee) updates.assignee = assignee
 
-    if (Object.keys(updates).length === 0 && !summary) {
+    if (Object.keys(updates).length === 0) {
       console.log('No updates provided')
       return
     }
@@ -58,23 +57,16 @@ export default defineCommand({
     if (Object.keys(updates).length > 0) {
       await projects.updateTask(projectSlug, taskSlug, updates)
 
-      // Log to status.md
+      // Log to status.tsv
       const changes = Object.entries(updates)
         .map(([key, value]) => `${key}=${value}`)
         .join(', ')
-      await status.appendStatus(taskDir, `Updated: ${changes}`)
+      await status.appendStatus(taskDir, 'task', taskSlug, 'updated', changes)
     }
 
-    // Append summary if provided
-    let summaryLine = summary
-    if (!summary && (updates.status || updates.assignee)) {
-      summaryLine = `Updated: ${updates.status ? ` status to ${updates.status}` : ''}${updates.assignee ? ` assignee to ${updates.assignee}` : ''}`
-    }
-    if (summaryLine) {
-      await status.appendStatus(taskDir, summaryLine)
-    }
+    // Log status/assignee changes to project
     if (updates.status) {
-      await status.appendStatus(projectDir, `Task updated: ${taskSlug} > status to ${updates.status}`)
+      await status.appendStatus(projectDir, 'task', taskSlug, 'updated', `status to ${updates.status}`)
     }
 
     // Run post-update hooks

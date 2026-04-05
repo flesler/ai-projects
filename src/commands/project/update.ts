@@ -6,18 +6,17 @@ import status from '../../util/status.js'
 import ctx from '../../util/context.js'
 
 export default defineCommand({
-  description: 'Update project properties: name, description, status, assignee, or append summary',
+  description: 'Update project properties: name, description, status, assignee',
   options: z.object({
     name: z.string().optional().describe('New name'),
     description: z.string().optional().describe('New description'),
     status: z.string().optional().describe('New status'),
     assignee: z.string().optional().describe('New assignee'),
-    summary: z.string().optional().describe('Optional summary to append to status.md'),
   }),
   args: z.object({
     project: z.string().optional().describe('Project slug (defaults to current project from $PWD)'),
   }),
-  handler: async ({ project, name, description, status: newStatus, assignee, summary }) => {
+  handler: async ({ project, name, description, status: newStatus, assignee }) => {
     // Use current project from PWD if not specified
     const projectSlug = project || ctx.getProjectFromPwd()
     if (!projectSlug) {
@@ -51,16 +50,11 @@ export default defineCommand({
     // Update frontmatter
     await projects.updateProject(projectSlug, updates)
 
-    // Log to status.md
+    // Log to status.tsv
     const changes = Object.entries(updates)
       .map(([key, value]) => `${key}=${value}`)
       .join(', ')
-    await status.appendStatus(projectDir, `Updated: ${changes}`)
-
-    // Append summary if provided
-    if (summary) {
-      await status.appendStatus(projectDir, summary)
-    }
+    await status.appendStatus(projectDir, 'project', projectSlug, 'updated', changes)
 
     // Run post-update hooks
     await hooks.runHooks(projectDir, 'post-update', {

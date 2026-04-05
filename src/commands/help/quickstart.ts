@@ -2,7 +2,7 @@ import { z } from 'zod'
 import pkg from '../../../package.json'
 import defineCommand from '../../util/defineCommand.js'
 
-const name = Object.keys(pkg.bin)[0]
+const aip = Object.keys(pkg.bin)[0]
 
 const TEXT = `# Quick Start
 
@@ -10,20 +10,20 @@ const TEXT = `# Quick Start
 
 \`\`\`bash
 # 1. Create project (if needed)
-${name} project create "my-project" --description "What I'm building"
+${aip} project create "my-project" --description "What I'm building"
 
 # 2. Create task
-${name} task create my-project "first-task" --description "Start here"
+${aip} task create my-project "first-task" --description "Start here"
 
 # 3. Navigate to task
-cd $(${name} task path first-task)
+cd $(${aip} task path first-task)
 
 # 4. Start working (implicit from PWD)
-${name} task start
-# → sets status to in-progress
+${aip} task start
+# → sets status to in-progress, reads all context to stdout
 
 # 5. Work session
-# Log progress: ${name} task update --summary "API integration complete"
+# Log progress: ${aip} log append "API integration complete"
 # Save: outputs/ to deliver, inputs/ for data
 \`\`\`
 
@@ -31,20 +31,27 @@ ${name} task start
 
 \`\`\`bash
 # Find your tasks (searches all projects)
-${name} task list
+${aip} task list
 
 # Navigate to task
-cd $(${name} task path task-slug)
+cd $(${aip} task path task-slug)
 
 # All commands work implicitly from PWD:
-${name} task start\t# Start working (sets status to in-progress)
+${aip} task start\t# Start working (sets status to in-progress, reads all context to stdout)
 \`\`\`
 
 ## Completing
 
 \`\`\`bash
 # Mark done (implicit from PWD)
-${name} task update --status done --summary "What I built"
+${aip} task update --status done
+${aip} log append "if you want to log something extra"
+\`\`\`
+
+## Check current task
+
+\`\`\`bash
+${aip} task current
 \`\`\`
 
 **Note:** All task commands accept an optional task slug, but use PWD if not provided. Navigate with \`cd\` first for smoother workflow.
@@ -54,14 +61,14 @@ ${name} task update --status done --summary "What I built"
 \`\`\`
 $AIP_HOME/projects/slug/
 ├── main.md\t# Goals (read first)
-├── status.md\t# Log (append every session)
+├── status.tsv\t# Log (append every session)
 └── tasks/task/
 \t├── main.md\t# Task definition
-\t└── status.md\t# Updates
+\t└── status.tsv\t# Updates
 \`\`\`
 
-**Status format:** \`[YYYY-MM-DD HH:MM] message\`
-**Example:** \`[2026-03-30 14:30] API integration complete\`
+**Status format:** TSV with columns: date, time, entityType, slug, action, text
+**Example:** \`2026-03-30<TAB>14:30:00<TAB>task<TAB>api-integration<TAB>log<TAB>API integration complete\`
 `
 
 export default defineCommand({
