@@ -4,14 +4,15 @@ import type { TaskStatus } from '../../util/projects.js'
 import projects, { ACTIVE_TASK_STATUSES, ALL_TASK_STATUSES } from '../../util/projects.js'
 
 export default defineCommand({
-  description: 'List tasks, optionally filtered by project, status, or assignee',
+  description: 'List tasks, optionally filtered by project, status, assignee, or search query',
   options: z.object({
     project: z.string().optional().describe('Project slug (searches all projects if not provided)'),
     statuses: z.array(z.string()).default([]).describe('Filter by statuses (multiple allowed)'),
     assignee: z.string().optional().describe('Filter by assignee'),
     all: z.boolean().default(false).describe('Include all tasks (including done/blocked)'),
+    search: z.string().optional().describe('Search query (matches task slug or name, case-insensitive)'),
   }),
-  handler: async ({ project, statuses, assignee, all }) => {
+  handler: async ({ project, statuses, assignee, all, search }) => {
     // Validate statuses if provided
     if (statuses && statuses.length > 0) {
       for (const status of statuses) {
@@ -47,6 +48,14 @@ export default defineCommand({
 
         if (allowedStatuses.length > 0 && !allowedStatuses.includes(meta.status || '')) continue
         if (assignee && meta.assignee !== assignee) continue
+
+        // Apply search filter if provided (matches slug or name, case-insensitive)
+        if (search) {
+          const searchLower = search.toLowerCase()
+          const slugMatch = slug.toLowerCase().includes(searchLower)
+          const nameMatch = (meta.name || '').toLowerCase().includes(searchLower)
+          if (!slugMatch && !nameMatch) continue
+        }
 
         rows.push({
           slug,
