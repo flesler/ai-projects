@@ -15,7 +15,7 @@ aip help quickstart
 # 📋 Read list of verbs by all nouns
 aip --help          # Same as `aip help usage`
 
-# 🎯 List of verbs by noun (same as `aip <noun> --help`)
+# 🎯 List of verbs by noun
 aip task --help      # Same as `aip help usage task`
 
 # 📋 Get all parameters and --options for a command

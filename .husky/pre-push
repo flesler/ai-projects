@@ -7,7 +7,7 @@ if [ -s "$HOME/.nvm/nvm.sh" ]; then
 fi
 
 # Run tests before pushing
-npm run test
+npm run test:full
 if [ $? -ne 0 ]; then
   echo "Tests failed; aborting push."
   exit 1
