@@ -12,18 +12,19 @@ AIP has a comprehensive built-in help system for every level:
 # 🚀 New here? Start with the quick guide
 aip help quickstart
 
-# 📋 Browse all commands by noun
-aip help usage
+# 📋 Read list of verbs by all nouns
+aip --help          # Same as `aip help usage`
 
-# 🎯 Need commands for a specific noun?
-aip help usage task      # All task commands
-aip help usage project   # All project commands
-aip help usage log       # All logging commands
+# 🎯 List of verbs by noun (same as `aip <noun> --help`)
+aip task --help      # Same as `aip help usage task`
+
+# 📋 Get all parameters and --options for a command
+aip task create --help
 
 # 📖 Complete API reference (comprehensive!)
 aip help api
 
-# 🛠️ Project management skill documentation
+# 🛠️ Project management skill documentation (can be piped to a SKILL.md)
 aip help skill
 
 # 🔗 Hook system documentation
@@ -41,23 +42,22 @@ aip help hooks
 ## 🚀 Quick Start
 
 ```bash
-# Create a project with multi-line body
-aip project create "my-project" --description "..." --body "$(cat <<'EOF'
-# Goals
-- Build something amazing
-- Solve real problems
+# Create project with body (inline - cleanest)
+aip project create "my-project" --description "..." --body $'# Goals\n- Build X\n- Solve Y'
 
-## Success Criteria
-- Tests passing
-- Documentation complete
-EOF
-)"
+# Create project with body (here-string for multi-line)
+aip project create "my-project" --description "..." --body "$(cat <<< '# Goals
+- Build X
+- Solve Y')"
 
 # Create a task in the project
 aip task create my-project "first-task" --description "Get started"
 
 # Navigate and work
 cd $(aip task path first-task)
+
+# Start working (and read in all context to stdout)
+aip task start
 
 # Log your progress
 aip log append "API integration complete"
@@ -98,6 +98,7 @@ aip task create my-project "task-name" --description "..."
 aip task update --status in-progress
 aip task list
 aip task path task-name        # Get absolute path
+aip task start                 # Start working (and read in all context to stdout)
 ```
 
 ### Logging
@@ -109,21 +110,10 @@ aip log read                   # View status history
 
 ### Utilities
 ```bash
-aip task ingest                # Output full context for AI agents
-aip task start                 # Mark as in-progress
 aip help quickstart            # Get started guide
+aip help skill --mode claude > ~/.claude/skills/aip/SKILL.md
+aip help skill --mode hermes > ~/.hermes/skills/some_toolset/aip/SKILL.md
 ```
-
-## 🤖 For AI Agents
-
-If you're an AI agent working with AIP:
-
-1. **Read** `$AIP_HOME/AGENTS.md` first
-2. **Review** `main.md` for goals and context
-3. **Check** `log.tsv` for activity history
-4. **Work** and save outputs to `outputs/`
-5. **Log** progress: `aip log append "message"`
-6. **Complete**: Set status=done, summarize in project status
 
 ## 💡 Pro Tips
 
@@ -131,12 +121,10 @@ If you're an AI agent working with AIP:
 # Chain commands
 cd $(aip task path my-task) && aip task start
 
-# Use heredocs for complex body content
-aip project update --body "$(cat <<'EOF'
-# Updated Goals
-...
-EOF
-)"
+# Use here-string for complex body content
+aip project update --body "$(cat <<< '# Updated Goals
+- New goal 1
+- New goal 2')"
 
 # Quick status check
 aip log read | tail -5
