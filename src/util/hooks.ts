@@ -62,10 +62,7 @@ const hooks = {
 
     return new Promise((resolve) => {
       const proc = spawn(hookPath, [], {
-        stdio: 'inherit',
-        env: hookEnv,
-        cwd: path.dirname(hookPath),
-        shell: false,
+        stdio: 'inherit', env: hookEnv, cwd: targetDir, shell: false,
       })
 
       proc.on('close', (code, signal) => {

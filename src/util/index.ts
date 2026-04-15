@@ -54,11 +54,8 @@ const util = {
 
   async readMany(...paths: string[]): Promise<string[]> {
     const contents = await Promise.all(paths.map(async (path) => {
-      if (await util.fileExists(path)) {
-        const content = await util.read(path)
-        return `# ${path}\n\n${content}`
-      }
-      return ''
+      const content = await util.fileExists(path) ? await util.read(path) : 'ERROR: File not found'
+      return `# ${path}\n\n${content}`
     }))
     return contents.filter(Boolean)
   },
