@@ -1,9 +1,8 @@
 import { z } from 'zod'
 import defineCommand from '../../util/defineCommand.js'
-import hooks from '../../util/hooks.js'
 import util from '../../util/index.js'
-import projects from '../../util/projects.js'
 import logUtil from '../../util/log.js'
+import projects from '../../util/projects.js'
 
 export default defineCommand({
   description: 'Create a new project with name, description, optional status, assignee and body',
@@ -21,15 +20,6 @@ export default defineCommand({
 
     // Run pre-create hooks
     const projectDir = projects.getProjectDir(slug)
-    const preHookSuccess = await hooks.runHooks(projectDir, 'pre-create', {
-      action: 'pre-create',
-      entityType: 'project',
-    })
-
-    if (!preHookSuccess) {
-      throw new Error('Pre-create hook failed, aborting project creation')
-    }
-
     // Create project
     await projects.createProject(slug, {
       name, description, status, assignee, created: new Date().toISOString(),
@@ -38,13 +28,6 @@ export default defineCommand({
     // Log creation
     await logUtil.append(projectDir, 'project', slug, 'created', `${name} > status is ${status}`)
 
-    // Run post-create hooks
-    await hooks.runHooks(projectDir, 'post-create', {
-      action: 'post-create',
-      entityType: 'project',
-    })
-
-    console.log(`Project created: ${slug}`)
-    console.log(`  Path: ${projectDir}`)
+    console.log(`Project created: ${slug}. Path: ${projectDir}`)
   },
 })
