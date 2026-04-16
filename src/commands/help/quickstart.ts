@@ -34,7 +34,7 @@ ${aip} task start
 ## Resuming
 
 \`\`\`bash
-# Find your tasks (searches all projects)
+# Find your tasks (searches all projects), can pass --project or --search to filter
 ${aip} task list
 
 # Navigate to task

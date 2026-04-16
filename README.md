@@ -116,7 +116,8 @@ aip project path my-project    # Get absolute path
 ```bash
 aip task create my-project "task-name" --description "..."
 aip task update --status in-progress
-aip task list
+aip task list --project my-project
+aip task list --search "-name"
 aip task path task-name        # Get absolute path
 aip task start                 # Start working (and read in all context to stdout)
 ```
