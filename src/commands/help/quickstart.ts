@@ -28,7 +28,8 @@ ${aip} task start
 
 # 5. Work session
 # Log progress: ${aip} log append "API integration complete"
-# Save: outputs/ to deliver, inputs/ for data
+# Save deliverables to outputs/ (e.g. reports, leads, etc.)
+# Save intermediate/raw (lower value) data to inputs/ (e.g. raw API responses, downloads)
 \`\`\`
 
 ## Resuming

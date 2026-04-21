@@ -93,8 +93,8 @@ $AIP_HOME/projects/{project}/
 ├── main.md          # Goals + body (YAML frontmatter + markdown)
 ├── log.tsv          # Activity log (tab-separated: date, time, type, slug, action, text)
 ├── hooks/           # Automation: pre|post-{create,start,update,complete}
-├── outputs/         # Deliverables go here
-├── inputs/          # External data (API responses, downloads)
+├── inputs/          # Intermediate/raw data (e.g. API responses, downloads)
+├── outputs/         # Deliverables go here (e.g. reports, leads, etc.)
 ├── scripts/         # Automation scripts
 └── tasks/{task}/
     ├── main.md      # Task definition + body

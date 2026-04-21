@@ -31,8 +31,8 @@ $AIP_HOME/${PROJECTS}/{project-slug}/
 ├── ${MAIN}\t# Goals + body (YAML frontmatter + markdown content)
 ├── ${LOG}\t# Chronological log (TSV: date, time, entityType, slug, action, text)
 ├── ${HOOKS}/\t\t# pre|post-{create,start,update,complete}.*
-├── ${OUTPUTS}/\t# Deliverables
-├── ${INPUTS}/\t# External data
+├── ${INPUTS}/\t# Intermediate/raw data (e.g. API responses, downloads)
+├── ${OUTPUTS}/\t# Deliverables (e.g. reports, leads, etc.)
 ├── ${SCRIPTS}/\t# Automation
 └── ${TASKS}/
 \t└── {task-slug}/
