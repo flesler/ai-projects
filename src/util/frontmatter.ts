@@ -2,6 +2,9 @@
 
 import yaml from 'yaml'
 import util from './index.js'
+import Logger from './Logger.js'
+
+const logger = new Logger()
 
 /** Project frontmatter structure */
 export interface ProjectFrontmatter {
@@ -76,12 +79,16 @@ export const updateFrontmatter = async <T extends AnyFrontmatter>(
 }
 
 /** Read and parse frontmatter from a file */
-export const readFrontmatter = async <T extends AnyFrontmatter>(filePath: string): Promise<Partial<T>> => {
+export const readFrontmatter = async <T extends AnyFrontmatter>(filePath: string): Promise<Partial<T> | null> => {
+  const exists = await util.fileExists(filePath)
+  if (!exists) {
+    return null
+  }
   const content = await util.read(filePath)
   const parsed = parseFrontmatter<T>(content)
-
   if (!parsed) {
-    throw new Error(`No frontmatter found in ${filePath}`)
+    logger.warn(`No frontmatter found in ${filePath}`)
+    return null
   }
 
   return parsed.frontmatter

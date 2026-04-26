@@ -165,30 +165,18 @@ const projects = {
   /** Get project metadata */
   async getProject(projectSlug: string): Promise<Partial<ProjectFrontmatter> | null> {
     const mainPath = util.join(this.getProjectDir(projectSlug), config.files.MAIN)
-    const exists = await util.fileExists(mainPath)
-    if (!exists) {
-      return null
-    }
     return await readFrontmatter<ProjectFrontmatter>(mainPath)
   },
 
   /** Get task metadata */
   async getTask(projectSlug: string, taskSlug: string): Promise<Partial<TaskFrontmatter> | null> {
     const mainPath = util.join(this.getTaskDir(projectSlug, taskSlug), config.files.MAIN)
-    const exists = await util.fileExists(mainPath)
-    if (!exists) {
-      return null
-    }
     return await readFrontmatter<TaskFrontmatter>(mainPath)
   },
 
   /** Get agent metadata */
   async getAgent(agentSlug: string): Promise<Partial<AgentFrontmatter> | null> {
     const mainPath = util.join(this.getAgentDir(agentSlug), config.files.MAIN)
-    const exists = await util.fileExists(mainPath)
-    if (!exists) {
-      return null
-    }
     return await readFrontmatter<AgentFrontmatter>(mainPath)
   },
 

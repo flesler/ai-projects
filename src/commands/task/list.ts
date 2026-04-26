@@ -11,7 +11,7 @@ export default defineCommand({
     statuses: z.array(z.string()).default([]).describe('Filter by statuses (multiple allowed)'),
     assignee: z.string().optional().describe('Filter by assignee'),
     all: z.boolean().default(false).describe('Include all tasks (including done/blocked)'),
-    search: z.string().optional().describe('Search query (matches task slug, case-insensitive, multi-part AND)'),
+    search: z.string().optional().describe('Search query (matches task slug, case-insensitive, multi-part AND, any order)'),
   }),
   handler: async ({ project, statuses, assignee, all, search }) => {
     // Validate statuses if provided
