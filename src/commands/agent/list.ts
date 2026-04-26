@@ -6,30 +6,22 @@ export default defineCommand({
   options: z.object({}),
   handler: async () => {
     const allAgents = await projects.listAgents()
-    const rows: Array<{ slug: string; name: string; status?: string; description?: string }> = []
+    const rows: Array<{ slug: string; description?: string }> = []
 
     for (const slug of allAgents) {
       const meta = await projects.getAgent(slug)
       if (!meta) continue
 
-      rows.push({
-        slug,
-        name: meta.name || slug,
-        status: meta.status,
-        description: meta.description,
-      })
+      rows.push({ slug, description: meta.description })
     }
 
     if (rows.length === 0) {
-      console.log('No agents found')
-      return
+      return console.log('No agents found')
     }
 
-    // Simple table output
     console.log('Agents:')
-    console.log('---')
     for (const row of rows) {
-      console.log(`${row.slug.padEnd(20)} ${row.name?.padEnd(30) || ''} ${row.status || ''} ${row.description || ''}`)
+      console.log(`- ${row.slug}: ${row.description || ''}`)
     }
   },
 })

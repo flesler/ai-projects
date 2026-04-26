@@ -348,6 +348,14 @@ const util = {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '')
   },
+
+  /** Matches search parts against a slug (case-insensitive, all parts must match) */
+  matchesSearch: (slug: string, search: string | undefined): boolean => {
+    const parts = search?.toLowerCase().split(/\s+/).filter(Boolean)
+    if (!parts?.length) return true
+    const slugLower = slug.toLowerCase()
+    return parts.every(part => slugLower.includes(part))
+  },
 }
 
 export default util

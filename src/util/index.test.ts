@@ -1,8 +1,31 @@
-import { toModule, type FnTestCase, type TestCase } from './tests.js'
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import util from './index.js'
+import type { FnSingleTestCase } from './tests.js'
+import { toModule, type FnTestCase, type TestCase } from './tests.js'
 
 describe(toModule(__filename), () => {
+  describe('matchesSearch', () => {
+    const cases: FnTestCase<typeof util.matchesSearch>[] = [
+      { desc: 'exact match', input: ['setup-deploy', 'setup-deploy'], expected: true },
+      { desc: 'partial match', input: ['setup-deploy', 'setup'], expected: true },
+      { desc: 'case insensitive', input: ['Setup-Deploy', 'SETUP'], expected: true },
+      { desc: 'no match', input: ['setup-deploy', 'test'], expected: false },
+      { desc: 'multi-part all match', input: ['setup-deploy-prod', 'setup deploy'], expected: true },
+      { desc: 'multi-part one fails', input: ['setup-deploy', 'setup test'], expected: false },
+      { desc: 'empty search matches everything', input: ['any-slug', ''], expected: true },
+      { desc: 'undefined search matches everything', input: ['any-slug', undefined], expected: true },
+      { desc: 'whitespace-only search matches everything', input: ['any-slug', '   '], expected: true },
+      { desc: 'multiple spaces between parts', input: ['setup-deploy-prod', 'setup   deploy'], expected: true },
+      { desc: 'order doesn\'t matter', input: ['setup-deploy', 'deploy setup'], expected: true },
+    ]
+
+    cases.forEach(({ desc, input, expected }) => {
+      it(`should handle ${desc}`, () => {
+        expect(util.matchesSearch(...input)).toBe(expected)
+      })
+    })
+  })
+
   describe('slugify', () => {
     const cases: FnTestCase<typeof util.slugify>[] = [
       { desc: 'simple text', input: 'Hello World', expected: 'hello-world' },
@@ -291,7 +314,7 @@ describe(toModule(__filename), () => {
   })
 
   describe('toMS', () => {
-    const cases: FnTestCase<typeof util.toMS>[] = [
+    const cases: FnSingleTestCase<typeof util.toMS>[] = [
       { desc: 'seconds', input: { seconds: 1 }, expected: 1000 },
       { desc: 'minutes', input: { minutes: 1 }, expected: 60000 },
       { desc: 'hours', input: { hours: 1 }, expected: 3600000 },
@@ -307,7 +330,7 @@ describe(toModule(__filename), () => {
   })
 
   describe('toSecs', () => {
-    const cases: FnTestCase<typeof util.toSecs>[] = [
+    const cases: FnSingleTestCase<typeof util.toSecs>[] = [
       { desc: 'minutes', input: { minutes: 1 }, expected: 60 },
       { desc: 'hours', input: { hours: 1 }, expected: 3600 },
       { desc: 'mixed', input: { minutes: 1, seconds: 30 }, expected: 90 },

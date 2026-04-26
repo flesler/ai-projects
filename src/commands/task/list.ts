@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import defineCommand from '../../util/defineCommand.js'
+import util from '../../util/index.js'
 import type { TaskStatus } from '../../util/projects.js'
 import projects, { ACTIVE_TASK_STATUSES, ALL_TASK_STATUSES } from '../../util/projects.js'
 
@@ -10,7 +11,7 @@ export default defineCommand({
     statuses: z.array(z.string()).default([]).describe('Filter by statuses (multiple allowed)'),
     assignee: z.string().optional().describe('Filter by assignee'),
     all: z.boolean().default(false).describe('Include all tasks (including done/blocked)'),
-    search: z.string().optional().describe('Search query (matches task slug or name, case-insensitive)'),
+    search: z.string().optional().describe('Search query (matches task slug, case-insensitive, multi-part AND)'),
   }),
   handler: async ({ project, statuses, assignee, all, search }) => {
     // Validate statuses if provided
@@ -22,7 +23,6 @@ export default defineCommand({
       }
     }
 
-    // Determine which statuses to include
     let allowedStatuses: readonly string[]
     if (statuses && statuses.length > 0) {
       allowedStatuses = statuses
@@ -32,57 +32,43 @@ export default defineCommand({
       allowedStatuses = ACTIVE_TASK_STATUSES
     }
 
-    // Get projects to search
     const projectSlugs = project ? [project] : await projects.listProjects()
+    const tasksByProject: Record<string, TaskRow[]> = {}
 
-    // Collect tasks grouped by project
-    const tasksByProject: Record<string, Array<{ slug: string; name: string; status?: string; assignee?: string }>> = {}
-
-    for (const projectSlug of projectSlugs) {
+    await util.promiseEach(projectSlugs, async (projectSlug) => {
       const allTasks = await projects.listTasks(projectSlug)
-      const rows: Array<{ slug: string; name: string; status?: string; assignee?: string }> = []
+      const rows: TaskRow[] = []
 
-      for (const slug of allTasks) {
+      await util.promiseEach(allTasks, async (slug) => {
         const meta = await projects.getTask(projectSlug, slug)
-        if (!meta) continue
+        if (!meta) return
+        if (allowedStatuses.length > 0 && !allowedStatuses.includes(meta.status || '')) return
+        if (assignee && meta.assignee !== assignee) return
+        if (!util.matchesSearch(slug, search)) return
 
-        if (allowedStatuses.length > 0 && !allowedStatuses.includes(meta.status || '')) continue
-        if (assignee && meta.assignee !== assignee) continue
-
-        // Apply search filter if provided (matches slug or name, case-insensitive)
-        if (search) {
-          const searchLower = search.toLowerCase()
-          const slugMatch = slug.toLowerCase().includes(searchLower)
-          const nameMatch = (meta.name || '').toLowerCase().includes(searchLower)
-          if (!slugMatch && !nameMatch) continue
-        }
-
-        rows.push({
-          slug,
-          name: meta.name || slug,
-          status: meta.status,
-          assignee: meta.assignee,
-        })
-      }
+        rows.push({ slug, description: meta.description })
+      })
 
       if (rows.length > 0) {
         tasksByProject[projectSlug] = rows.sort((a, b) => a.slug.localeCompare(b.slug))
       }
-    }
+    })
 
-    // Output grouped by project
     const projectNames = Object.keys(tasksByProject).sort()
     if (projectNames.length === 0) {
-      console.log('No tasks found')
-      return
+      return console.log('No tasks found')
     }
 
     for (const projectSlug of projectNames) {
-      console.log(`\n${projectSlug}:`)
-      console.log('---')
+      console.log(`${projectSlug}:`)
       for (const row of tasksByProject[projectSlug]) {
-        console.log(`${row.slug.padEnd(20)} ${row.name?.padEnd(30) || ''} ${row.status || ''} ${row.assignee || ''}`)
+        console.log(`- ${row.slug}: ${row.description || ''}`)
       }
     }
   },
 })
+
+interface TaskRow {
+  slug: string
+  description?: string
+}

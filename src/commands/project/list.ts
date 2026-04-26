@@ -9,7 +9,7 @@ export default defineCommand({
   }),
   handler: async ({ status }) => {
     const allProjects = await projects.listProjects()
-    const rows: Array<{ slug: string; name: string; status?: string; assignee?: string }> = []
+    const rows: Array<{ slug: string; status?: string; assignee?: string }> = []
 
     for (const slug of allProjects) {
       const meta = await projects.getProject(slug)
@@ -17,24 +17,17 @@ export default defineCommand({
 
       if (status && meta.status !== status) continue
 
-      rows.push({
-        slug,
-        name: meta.name || slug,
-        status: meta.status,
-        assignee: meta.assignee,
-      })
+      rows.push({ slug, status: meta.status, assignee: meta.assignee })
     }
 
     if (rows.length === 0) {
-      console.log('No projects found')
-      return
+      return console.log('No projects found')
     }
 
     // Simple table output
     console.log('Projects:')
-    console.log('---')
     for (const row of rows) {
-      console.log(`${row.slug.padEnd(20)} ${row.name?.padEnd(30) || ''} ${row.status || ''} ${row.assignee || ''}`)
+      console.log(`- ${row.slug}: ${row.status || ''} ${row.assignee || ''}`)
     }
   },
 })
