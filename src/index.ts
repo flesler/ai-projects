@@ -2,6 +2,7 @@ import pkg from '../package.json'
 import commandMap from './commands/index.js'
 import util from './util'
 import type { CommandDef } from './util/defineCommand.js'
+import { logError } from './util/logError.js'
 
 process.on('unhandledRejection', (err) => {
   console.error('Unhandled Rejection:', err)
@@ -20,26 +21,34 @@ async function cli(args: string[]) {
     process.exit(0)
   }
   try {
-    if (!noun || !util.isKeyOf(noun, commandMap)) {
+    let isHelp = !noun || noun === '--help' || noun === '-h'
+    if (isHelp || !util.isKeyOf(noun, commandMap)) {
       await commandMap.help.usage.handler({})
+      if (!isHelp) {
+        logError(args, `Unknown command: ${noun}`)
+      }
       process.exit(1)
     }
     const verbs = commandMap[noun]
-    if (!verb || !util.isKeyOf(verb, verbs)) {
+    isHelp = !verb || verb === '--help' || verb === '-h'
+    if (isHelp || !util.isKeyOf(verb, verbs)) {
+      if (!isHelp) {
+        logError(args, `Unknown command: ${noun} ${verb}`)
+      }
       await commandMap.help.usage.handler({ name: noun })
       process.exit(1)
     }
 
     const command = verbs[verb] as CommandDef<any>
-    if (!command) {
-      console.error(`Error: unknown command '${noun} ${verb}'`)
-      console.log('Run with --help for more information')
-      process.exit(1)
-    }
-
+    command.parser._internalHandler((result) => {
+      if (result.type === 'error') {
+        logError(args, result.error || 'parse error')
+      }
+    })
     await command.handler(command.parser.name(`${noun} ${verb}`).parse(rest))
   } catch (err) {
     console.error('Error:', util.errorMessage(err))
+    logError(args, err)
     process.exit(1)
   }
 }
