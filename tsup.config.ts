@@ -19,6 +19,9 @@ export default defineConfig((options) => {
     silent: !dts,
     skipNodeModulesBundle: true,
     external: ['zod-opts', 'zod'],
+    env: {
+      NODE_ENV: dts ? 'production' : 'development',
+    },
     esbuildOptions(options) {
       options.banner = {
         js: '#!/usr/bin/env node',

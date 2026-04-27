@@ -1,5 +1,5 @@
 /** Read environment variables */
-
+import dotenv from 'dotenv'
 import path from 'path'
 import config from './config'
 
@@ -20,6 +20,10 @@ export function requiredString(key: string): string {
 export function boolean(key: string, defaultValue = false): boolean {
   const val = process.env[key]
   return (val === 'true' || val === '1') ?? defaultValue
+}
+
+if (process.env.NODE_ENV === 'development') {
+  dotenv.config({ quiet: true, override: true })
 }
 
 /**
@@ -44,6 +48,7 @@ if (!envHome) {
 /** Configuration. AIP_HOME = base directory, projects in AIP_HOME/projects/ */
 const env = {
   AIP_HOME: envHome,
+  ERROR_LOG: process.env.AIP_ERROR_LOG,
 } as const
 
 export default env
