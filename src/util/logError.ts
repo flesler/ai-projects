@@ -40,5 +40,5 @@ export function logError(args: readonly string[], err: unknown): void {
 }
 
 function escapeTsv(value: string): string {
-  return value.replace(/\\/g, '\\\\').replace(/\t/g, '\\t').replace(/\n/g, '\\n').replace(/\r/g, '\\r')
+  return (value || '-').replace(/\\/g, '\\\\').replace(/\t/g, '\\t').replace(/\n/g, '\\n').replace(/\r/g, '')
 }
