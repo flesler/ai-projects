@@ -31,7 +31,11 @@ if (process.env.NODE_ENV === 'development') {
  * 1. Use AIP_HOME env var if set (from ~/.bashrc or similar)
  * 2. Otherwise, auto-detect by traversing up from CWD looking for standard dirs
  */
-let envHome = process.env.AIP_HOME
+function expandHome(p: string): string {
+  return p.startsWith('~') ? path.join(process.env.HOME ?? '', p.slice(1)) : p
+}
+
+let envHome = process.env.AIP_HOME ? expandHome(process.env.AIP_HOME) : undefined
 if (!envHome) {
   envHome = process.cwd()
   const candidates = envHome.split(path.sep)
