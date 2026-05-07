@@ -18,7 +18,7 @@ export default defineCommand({
     const context = ctx.getCurrentContext()
     const taskSlug = task ?? context.task
     if (!taskSlug) {
-      throw new Error('No task specified (use --task or cd into task dir)')
+      throw new Error('No task specified (provide task slug as argument, e.g. "aip task start my-task", or cd into task dir)')
     }
 
     const { project: projectSlug } = await projects.findTask(taskSlug, project)
