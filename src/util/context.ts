@@ -1,10 +1,11 @@
 /** Project/task context from $PWD */
 
+import fs from 'fs'
 import path from 'path'
 import config from './config.js'
 import util from './index.js'
 
-const projectsDir = util.joinHome(config.dirs.PROJECTS)
+const projectsDir = fs.realpathSync(util.joinHome(config.dirs.PROJECTS))
 
 const context = {
   getProjectFromPwd(pwd: string = process.cwd()): string | null {
