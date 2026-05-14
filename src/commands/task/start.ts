@@ -39,7 +39,7 @@ export default defineCommand({
 
     // Update status to in-progress if not already
     const meta = await projects.getTask(projectSlug, taskSlug)
-    if (meta?.status !== TaskStatus.IN_PROGRESS) {
+    if (meta?.status !== TaskStatus.IN_PROGRESS && meta?.status !== TaskStatus.ONGOING) {
       await update.handler({ project: projectSlug, task: taskSlug, status: TaskStatus.IN_PROGRESS })
     }
 
