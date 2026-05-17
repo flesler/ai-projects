@@ -360,12 +360,6 @@ const util = {
 
 export default util
 
-/** Shortcut for Array<keyof T> */
-export type KeysOf<T> = Array<keyof T>
-
-/** The return type of the typeof operator */
-export type TypeOf = ReturnType<typeof util.typeOf>
-
 /** Promise with resolve/reject methods */
 export interface PromiseExtra<T> extends Promise<T> {
   resolve: (value: T) => void
