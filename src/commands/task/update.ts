@@ -4,8 +4,8 @@ import ctx from '../../util/context.js'
 import defineCommand from '../../util/defineCommand.js'
 import hooks from '../../util/hooks.js'
 import util from '../../util/index.js'
-import projects from '../../util/projects.js'
 import log from '../../util/log.js'
+import projects from '../../util/projects.js'
 
 export default defineCommand({
   description: 'Update task properties: name, description, status, assignee, or replace body',
@@ -16,11 +16,12 @@ export default defineCommand({
     assignee: z.string().optional().describe('New assignee'),
     project: z.string().optional().describe('Project slug (searches all projects if not provided)'),
     body: z.string().optional().describe('Replace entire body/content (markdown)'),
+    log: z.string().optional().describe('Log message to include in log.tsv'),
   }),
   args: z.object({
     task: z.string().optional().describe('Task slug (default: from $PWD)'),
   }),
-  handler: async ({ project, task, name, description, status: newStatus, assignee, body }) => {
+  handler: async ({ project, task, name, description, status: newStatus, assignee, body, log: logText }) => {
     const context = ctx.getCurrentContext()
     const taskSlug = task ?? context.task
     if (!taskSlug) {
@@ -63,10 +64,16 @@ export default defineCommand({
       await projects.updateTask(projectSlug, taskSlug, updates)
 
       // Log to log.tsv
-      const changes = Object.entries(updates)
+      let changes = Object.entries(updates)
         .map(([key, value]) => `${key}=${value}`)
         .join(', ')
+
+      if (logText) {
+        changes += ` | ${logText}`
+      }
       await log.append(taskDir, 'task', taskSlug, 'updated', changes)
+    } else if (logText) {
+      await log.append(taskDir, 'task', taskSlug, 'log', logText)
     }
 
     // Replace body if provided

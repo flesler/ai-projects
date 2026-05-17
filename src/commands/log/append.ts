@@ -3,7 +3,7 @@ import config from '../../util/config.js'
 import ctx from '../../util/context.js'
 import defineCommand from '../../util/defineCommand.js'
 import util from '../../util/index.js'
-import logUtil from '../../util/log.js'
+import log from '../../util/log.js'
 
 export default defineCommand({
   description: 'Append a custom entry to log.tsv',
@@ -32,10 +32,10 @@ export default defineCommand({
         throw new Error('No task specified')
       }
       const taskDir = util.join(projectDir, config.dirs.TASKS, taskSlug)
-      await logUtil.append(taskDir, 'task', taskSlug, 'log', text)
+      await log.append(taskDir, 'task', taskSlug, 'log', text)
       console.log(`Appended to task ${taskSlug} log.tsv`)
     } else {
-      await logUtil.append(projectDir, 'project', projectSlug, 'log', text)
+      await log.append(projectDir, 'project', projectSlug, 'log', text)
       console.log(`Appended to project ${projectSlug} log.tsv`)
     }
   },
