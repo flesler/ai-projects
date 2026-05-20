@@ -23,8 +23,7 @@ if [ "$consecutive_comments" = "1" ]; then
   exit 1
 fi
 
-if [ -s "$HOME/.nvm/nvm.sh" ]; then
-  # Try to use NVM if available, otherwise continue with current node
+if ! command -v npm >/dev/null 2>&1 && [ -s "$HOME/.nvm/nvm.sh" ]; then
   . "$HOME/.nvm/nvm.sh"
   nvm use
 fi
