@@ -54,7 +54,7 @@ export default defineCommand({
     if (newStatus) updates.status = newStatus
     if (assignee) updates.assignee = assignee
 
-    if (Object.keys(updates).length === 0 && !body) {
+    if (Object.keys(updates).length === 0 && !body && !logText) {
       console.log('No updates provided')
       return
     }

@@ -1,6 +1,7 @@
 import pkg from '../package.json'
 import commandMap from './commands/index.js'
 import util from './util'
+import { transformArgs } from './util/aliases.js'
 import type { CommandDef } from './util/defineCommand.js'
 import { logError } from './util/logError.js'
 import type { ZodObject } from 'zod'
@@ -16,7 +17,7 @@ process.on('uncaughtException', (err) => {
 })
 
 async function cli(args: string[]) {
-  const [noun, verb, ...rest] = args
+  const [noun, verb, ...rest] = transformArgs(args)
   if (noun === '--version' || noun === '-v') {
     console.log(pkg.version)
     process.exit(0)
@@ -30,6 +31,7 @@ async function cli(args: string[]) {
       }
       process.exit(1)
     }
+
     const verbs = commandMap[noun]
     isHelp = !verb || verb === '--help' || verb === '-h'
     if (isHelp || !util.isKeyOf(verb, verbs)) {
