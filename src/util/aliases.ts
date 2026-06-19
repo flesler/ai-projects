@@ -1,4 +1,5 @@
 import type { Noun } from './types'
+import { logAlias } from './logError.js'
 
 type CommandAlias = {
   noun: Noun
@@ -36,6 +37,8 @@ export const argAliases: Partial<Record<Noun, Record<string, Record<string, stri
 export function resolveCommand(noun: string, verb: string, args: string[]): { noun: string; verb: string; args: string[] } {
   const alias = (commandAliases as Record<string, Record<string, CommandAlias> | undefined>)[noun]?.[verb]
   if (alias) {
+    const original = `${noun} ${verb} ${args.join(' ')}`.trim()
+    logAlias([noun, verb, ...args], original)
     return { noun: alias.noun, verb: alias.verb, args: [...(alias.prependArgs || []), ...args] }
   }
   return { noun, verb, args }

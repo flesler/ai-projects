@@ -4,9 +4,9 @@ import commandMap from '../commands/index.js'
 import env from './env.js'
 import util from './index.js'
 
-const HEADER = 'date\ttime\tnoun\tverb\textra_args\terror'
+const HEADER = 'type\tdate\ttime\tnoun\tverb\textra_args\terror'
 
-export function logError(args: readonly string[], err: unknown): void {
+function writeLog(type: 'error' | 'alias', args: readonly string[], message: string): void {
   if (!env.ERROR_LOG) return
 
   const now = new Date()
@@ -26,7 +26,7 @@ export function logError(args: readonly string[], err: unknown): void {
   const consumed = (noun ? 1 : 0) + (verb ? 1 : 0)
   const extraArgs = args.slice(consumed).join(' ')
 
-  const line = [date, time, noun, verb, extraArgs, util.errorMessage(err)]
+  const line = [type, date, time, noun, verb, extraArgs, message]
     .map(escapeTsv)
     .join('\t')
 
@@ -37,6 +37,14 @@ export function logError(args: readonly string[], err: unknown): void {
 
   const exists = fs.existsSync(env.ERROR_LOG)
   fs.appendFileSync(env.ERROR_LOG, (exists ? '' : HEADER + '\n') + line + '\n')
+}
+
+export function logError(args: readonly string[], err: unknown): void {
+  writeLog('error', args, util.errorMessage(err))
+}
+
+export function logAlias(args: readonly string[], original: string): void {
+  writeLog('alias', args, original)
 }
 
 function escapeTsv(value: string): string {

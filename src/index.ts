@@ -43,11 +43,18 @@ async function cli(args: string[]) {
     }
 
     const command = verbs[verb] as CommandDef<any>
+    let parseError = false
     command.parser._internalHandler((result) => {
       if (result.type === 'error') {
+        parseError = true
         logError(args, result.error || 'parse error')
       }
     })
+
+    if (parseError) {
+      await commandMap.help.usage.handler({ name: noun })
+      process.exit(1)
+    }
 
     const parsedArgs = normalizeArgs(rest, command.args)
 
