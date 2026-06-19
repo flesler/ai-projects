@@ -61,7 +61,7 @@ const projects = {
     })
 
     if (matches.length === 0) {
-      throw new Error(`Task '${taskSlug}' not found. Use --project to specify the project.`)
+      throw new Error(`Task '${taskSlug}' not found in any project.`)
     }
 
     if (matches.length > 1) {
