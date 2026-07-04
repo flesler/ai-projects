@@ -48,11 +48,11 @@ describe(toModule(__filename), () => {
   describe('resolvePositionalFlagMisuse', () => {
     const positionalArgs = new Set(['project', 'name'])
     const cases: FnTestCase<typeof resolvePositionalFlagMisuse>[] = [
-      { desc: 'strips --project flag and keeps value', input: [['--project', 'privacy', 'unbroker-scan'], positionalArgs], expected: ['privacy', 'unbroker-scan'] },
-      { desc: 'strips --name flag and keeps value', input: [['privacy', '--name', 'unbroker-scan'], positionalArgs], expected: ['privacy', 'unbroker-scan'] },
-      { desc: 'handles multiple positional flags in order', input: [['--project', 'privacy', '--name', 'scan'], positionalArgs], expected: ['privacy', 'scan'] },
+      { desc: 'unbroker-scan --project privacy → privacy unbroker-scan', input: [['unbroker-scan', '--project', 'privacy'], positionalArgs], expected: ['privacy', 'unbroker-scan'] },
+      { desc: '--project privacy unbroker-scan → privacy unbroker-scan', input: [['--project', 'privacy', 'unbroker-scan'], positionalArgs], expected: ['privacy', 'unbroker-scan'] },
+      { desc: 'privacy --name unbroker-scan → privacy unbroker-scan', input: [['privacy', '--name', 'unbroker-scan'], positionalArgs], expected: ['privacy', 'unbroker-scan'] },
+      { desc: '--project privacy --name scan → privacy scan', input: [['--project', 'privacy', '--name', 'scan'], positionalArgs], expected: ['privacy', 'scan'] },
       { desc: 'preserves regular flags', input: [['--status', 'done', 'my-task'], positionalArgs], expected: ['--status', 'done', 'my-task'] },
-      { desc: 'unknown flags that match positional names get stripped', input: [['--project', 'privacy'], positionalArgs], expected: ['privacy'] },
       { desc: 'doesn\'t strip when next arg is also a flag', input: [['--project', '--other', 'value'], positionalArgs], expected: ['--project', '--other', 'value'] },
       { desc: 'doesn\'t strip unknown positional names', input: [['--unknown', 'value'], positionalArgs], expected: ['--unknown', 'value'] },
       { desc: 'empty args', input: [[], positionalArgs], expected: [] },
