@@ -73,25 +73,46 @@ export function resolveKeyValueArgs(args: string[]): string[] {
   return result
 }
 
-/** Strip -- prefix when users mistakenly use positional arg names as flags.
- *  Example: `aip task create --project privacy unbroker-scan` → `aip task create privacy unbroker-scan`
+/** Strip -- prefix when users mistakenly use positional arg names as flags and reorder args correctly.
+ *  Example: `aip task create unbroker-scan --project privacy` → `aip task create privacy unbroker-scan`
  *  This requires knowing which args are positional (passed from command schema). */
 export function resolvePositionalFlagMisuse(args: string[], positionalArgNames: Set<string>): string[] {
-  const result: string[] = []
+  const positionalArgList = Array.from(positionalArgNames)
+  const slots: Array<string | undefined> = new Array(positionalArgList.length).fill(undefined)
+  const otherArgs: string[] = []
+
+  // Extract positional values from --flag misuse
   let i = 0
   while (i < args.length) {
     if (args[i].startsWith('--')) {
       const key = args[i].slice(2)
       if (positionalArgNames.has(key) && i + 1 < args.length && !args[i + 1].startsWith('--')) {
-        // Skip the --flag, keep only the value
-        result.push(args[i + 1])
+        const index = positionalArgList.indexOf(key)
+        if (index !== -1) {
+          slots[index] = args[i + 1]
+        }
         i += 2
         continue
       }
     }
-    result.push(args[i])
+    otherArgs.push(args[i])
     i++
   }
+
+  // Fill empty slots with other args in order
+  let otherIndex = 0
+  for (let i = 0; i < slots.length; i++) {
+    if (slots[i] === undefined && otherIndex < otherArgs.length) {
+      slots[i] = otherArgs[otherIndex++]
+    }
+  }
+
+  // Return filled slots + any remaining other args
+  const result = slots.filter((v): v is string => v !== undefined)
+  if (otherIndex < otherArgs.length) {
+    result.push(...otherArgs.slice(otherIndex))
+  }
+
   return result
 }
 
