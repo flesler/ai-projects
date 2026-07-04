@@ -1,10 +1,10 @@
+import type { ZodObject } from 'zod'
 import pkg from '../package.json'
 import commandMap from './commands/index.js'
 import util from './util'
-import { transformArgs } from './util/aliases.js'
+import { resolvePositionalFlagMisuse, transformArgs } from './util/aliases.js'
 import type { CommandDef } from './util/defineCommand.js'
 import { logError } from './util/logError.js'
-import type { ZodObject } from 'zod'
 
 process.on('unhandledRejection', (err) => {
   console.error('Unhandled Rejection:', err)
@@ -75,24 +75,10 @@ if (util.isMain()) {
   cli(process.argv.slice(2))
 }
 
-/** Normalize --<positionalArg> <value> → <value> so agents who mistakenly use flags for positional args get the right behavior */
+/** Normalize args: handle positional arg misuse as flags */
 function normalizeArgs(args: string[], argsSchema: ZodObject<any> | undefined): string[] {
   if (!argsSchema) return args
 
   const positionalArgNames = new Set(Object.keys(argsSchema.shape))
-  const normalized: string[] = []
-  let i = 0
-  while (i < args.length) {
-    if (args[i].startsWith('--')) {
-      const key = args[i].slice(2)
-      if (positionalArgNames.has(key) && i + 1 < args.length && !args[i + 1].startsWith('--')) {
-        normalized.push(args[i + 1])
-        i += 2
-        continue
-      }
-    }
-    normalized.push(args[i])
-    i++
-  }
-  return normalized
+  return resolvePositionalFlagMisuse(args, positionalArgNames)
 }

@@ -1,5 +1,5 @@
-import type { Noun } from './types'
 import { logAlias } from './logError.js'
+import type { Noun } from './types'
 
 type CommandAlias = {
   noun: Noun
@@ -69,6 +69,28 @@ export function resolveKeyValueArgs(args: string[]): string[] {
     } else {
       result.push(arg)
     }
+  }
+  return result
+}
+
+/** Strip -- prefix when users mistakenly use positional arg names as flags.
+ *  Example: `aip task create --project privacy unbroker-scan` → `aip task create privacy unbroker-scan`
+ *  This requires knowing which args are positional (passed from command schema). */
+export function resolvePositionalFlagMisuse(args: string[], positionalArgNames: Set<string>): string[] {
+  const result: string[] = []
+  let i = 0
+  while (i < args.length) {
+    if (args[i].startsWith('--')) {
+      const key = args[i].slice(2)
+      if (positionalArgNames.has(key) && i + 1 < args.length && !args[i + 1].startsWith('--')) {
+        // Skip the --flag, keep only the value
+        result.push(args[i + 1])
+        i += 2
+        continue
+      }
+    }
+    result.push(args[i])
+    i++
   }
   return result
 }

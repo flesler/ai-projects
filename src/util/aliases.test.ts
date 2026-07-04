@@ -1,10 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  resolveArgAliases,
-  resolveCommand,
-  resolveKeyValueArgs,
-  transformArgs,
-} from './aliases.js'
+import { resolveArgAliases, resolveCommand, resolveKeyValueArgs, resolvePositionalFlagMisuse, transformArgs } from './aliases.js'
 import { toModule, type FnTestCase } from './tests.js'
 
 describe(toModule(__filename), () => {
@@ -46,6 +41,27 @@ describe(toModule(__filename), () => {
     cases.forEach(({ desc, input, expected }) => {
       it(`should handle ${desc}`, () => {
         expect(resolveArgAliases(...input)).toEqual(expected)
+      })
+    })
+  })
+
+  describe('resolvePositionalFlagMisuse', () => {
+    const positionalArgs = new Set(['project', 'name'])
+    const cases: FnTestCase<typeof resolvePositionalFlagMisuse>[] = [
+      { desc: 'strips --project flag and keeps value', input: [['--project', 'privacy', 'unbroker-scan'], positionalArgs], expected: ['privacy', 'unbroker-scan'] },
+      { desc: 'strips --name flag and keeps value', input: [['privacy', '--name', 'unbroker-scan'], positionalArgs], expected: ['privacy', 'unbroker-scan'] },
+      { desc: 'handles multiple positional flags in order', input: [['--project', 'privacy', '--name', 'scan'], positionalArgs], expected: ['privacy', 'scan'] },
+      { desc: 'preserves regular flags', input: [['--status', 'done', 'my-task'], positionalArgs], expected: ['--status', 'done', 'my-task'] },
+      { desc: 'unknown flags that match positional names get stripped', input: [['--project', 'privacy'], positionalArgs], expected: ['privacy'] },
+      { desc: 'doesn\'t strip when next arg is also a flag', input: [['--project', '--other', 'value'], positionalArgs], expected: ['--project', '--other', 'value'] },
+      { desc: 'doesn\'t strip unknown positional names', input: [['--unknown', 'value'], positionalArgs], expected: ['--unknown', 'value'] },
+      { desc: 'empty args', input: [[], positionalArgs], expected: [] },
+      { desc: 'no flags to strip', input: [['privacy', 'unbroker-scan'], positionalArgs], expected: ['privacy', 'unbroker-scan'] },
+    ]
+
+    cases.forEach(({ desc, input, expected }) => {
+      it(`should handle ${desc}`, () => {
+        expect(resolvePositionalFlagMisuse(...input)).toEqual(expected)
       })
     })
   })
