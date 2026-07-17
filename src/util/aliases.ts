@@ -29,6 +29,7 @@ export const argAliases: Partial<Record<Noun, Record<string, Record<string, stri
     update: {
       summary: 'log',
       message: 'log',
+      note: 'log',
     },
   },
 }
@@ -120,6 +121,14 @@ export function resolvePositionalFlagMisuse(args: string[], positionalArgNames: 
  *  Accepts the full `[noun, verb, ...rest]` array and returns the rewritten version. */
 export function transformArgs(args: string[]): string[] {
   const [noun = '', verb = '', ...rest] = args
+
+  // Handle bare verb aliases: `aip list` → `aip task list`
+  if (noun === 'list' && (!verb || verb.startsWith('-'))) {
+    logAlias([noun], 'task list')
+    const extraArgs = verb ? [verb, ...rest] : rest
+    return ['task', 'list', ...extraArgs]
+  }
+
   const cmdResult = resolveCommand(noun, verb, rest)
   const kvResult = resolveKeyValueArgs(cmdResult.args)
   const finalArgs = resolveArgAliases(cmdResult.noun, cmdResult.verb, kvResult)

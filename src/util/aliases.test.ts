@@ -32,6 +32,7 @@ describe(toModule(__filename), () => {
     const cases: FnTestCase<typeof resolveArgAliases>[] = [
       { desc: '--summary → --log for task update', input: ['task', 'update', ['--summary', 'did stuff']], expected: ['--log', 'did stuff'] },
       { desc: '--message → --log for task update', input: ['task', 'update', ['--message', 'did stuff']], expected: ['--log', 'did stuff'] },
+      { desc: '--note → --log for task update', input: ['task', 'update', ['--note', 'did stuff']], expected: ['--log', 'did stuff'] },
       { desc: 'unrelated flags unchanged', input: ['task', 'update', ['--status', 'done']], expected: ['--status', 'done'] },
       { desc: 'non-aliased noun unchanged', input: ['project', 'update', ['--summary', 'test']], expected: ['--summary', 'test'] },
       { desc: 'mixed with positional args', input: ['task', 'update', ['my-task', '--summary', 'test']], expected: ['my-task', '--log', 'test'] },
@@ -99,6 +100,7 @@ describe(toModule(__filename), () => {
       // Arg aliases (--summary/--message → --log)
       { desc: 'task update --summary "text" → task update --log "text"', input: ['task', 'update', '--summary', 'text'], expected: ['task', 'update', '--log', 'text'] },
       { desc: 'task update --message "text" → task update --log "text"', input: ['task', 'update', '--message', 'text'], expected: ['task', 'update', '--log', 'text'] },
+      { desc: 'task update --note "text" → task update --log "text"', input: ['task', 'update', '--note', 'text'], expected: ['task', 'update', '--log', 'text'] },
       // Combined: alias + arg alias
       { desc: 'task done my-task --summary "done" → task update --status done my-task --log "done"', input: ['task', 'done', 'my-task', '--summary', 'done'], expected: ['task', 'update', '--status', 'done', 'my-task', '--log', 'done'] },
       // Project aliases
