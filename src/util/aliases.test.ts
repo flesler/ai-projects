@@ -19,6 +19,13 @@ describe(toModule(__filename), () => {
       { desc: 'non-aliased command passes through', input: ['task', 'update', ['--status', 'done']], expected: { noun: 'task', verb: 'update', args: ['--status', 'done'] } },
       { desc: 'unknown noun passes through', input: ['agent', 'list', []], expected: { noun: 'agent', verb: 'list', args: [] } },
       { desc: 'preserves extra args after prepended args', input: ['task', 'done', ['my-task', '--log', 'finished']], expected: { noun: 'task', verb: 'update', args: ['--status', 'done', 'my-task', '--log', 'finished'] } },
+      // done/complete/stop/finish with 2+ positionals: 2nd+ becomes --log
+      { desc: 'task done my-task "msg" → --log msg', input: ['task', 'done', ['my-task', 'all done']], expected: { noun: 'task', verb: 'update', args: ['--status', 'done', 'my-task', '--log', 'all done'] } },
+      { desc: 'task finish update-memory "summary here" → --log', input: ['task', 'finish', ['update-memory', 'No session logs.']], expected: { noun: 'task', verb: 'update', args: ['--status', 'done', 'update-memory', '--log', 'No session logs.'] } },
+      { desc: 'task complete task "msg" → --log msg', input: ['task', 'complete', ['my-task', 'completion']], expected: { noun: 'task', verb: 'update', args: ['--status', 'done', 'my-task', '--log', 'completion'] } },
+      { desc: 'task done my-task "multi word" message → --log joined', input: ['task', 'done', ['my-task', 'all', 'done', 'now']], expected: { noun: 'task', verb: 'update', args: ['--status', 'done', 'my-task', '--log', 'all done now'] } },
+      { desc: 'task done --log present skips joining', input: ['task', 'done', ['my-task', '--log', 'msg', 'extra']], expected: { noun: 'task', verb: 'update', args: ['--status', 'done', 'my-task', '--log', 'msg', 'extra'] } },
+      { desc: 'task done my-task --status x passes through (1 positional)', input: ['task', 'done', ['my-task', '--status', 'nope']], expected: { noun: 'task', verb: 'update', args: ['--status', 'done', 'my-task', '--status', 'nope'] } },
     ]
 
     cases.forEach(({ desc, input, expected }) => {
@@ -103,6 +110,9 @@ describe(toModule(__filename), () => {
       { desc: 'task update --note "text" → task update --log "text"', input: ['task', 'update', '--note', 'text'], expected: ['task', 'update', '--log', 'text'] },
       // Combined: alias + arg alias
       { desc: 'task done my-task --summary "done" → task update --status done my-task --log "done"', input: ['task', 'done', 'my-task', '--summary', 'done'], expected: ['task', 'update', '--status', 'done', 'my-task', '--log', 'done'] },
+      // done/complete/stop/finish with 2+ positionals: 2nd+ becomes --log
+      { desc: 'task done my-task "all done" → task update --status done my-task --log "all done"', input: ['task', 'done', 'my-task', 'all done'], expected: ['task', 'update', '--status', 'done', 'my-task', '--log', 'all done'] },
+      { desc: 'task finish my-task "summary" → task update --status done my-task --log "summary"', input: ['task', 'finish', 'my-task', 'summary'], expected: ['task', 'update', '--status', 'done', 'my-task', '--log', 'summary'] },
       // Project aliases
       { desc: 'project done my-project → project update --status done my-project', input: ['project', 'done', 'my-project'], expected: ['project', 'update', '--status', 'done', 'my-project'] },
       // Passthrough: non-aliased commands unchanged

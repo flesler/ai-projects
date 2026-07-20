@@ -5,14 +5,17 @@ type CommandAlias = {
   noun: Noun
   verb: string
   prependArgs?: string[]
+  /** When true, treat the 2nd+ positional as a `--log` value (for done/finish-style verbs). */
+  joinTrailingAsLog?: boolean
 }
 
 /** Map (noun, aliasVerb) → real command. Prepended args are injected before the user's args. */
 export const commandAliases: Partial<Record<Noun, Record<string, CommandAlias>>> = {
   task: {
-    complete: { noun: 'task', verb: 'update', prependArgs: ['--status', 'done'] },
-    done: { noun: 'task', verb: 'update', prependArgs: ['--status', 'done'] },
-    stop: { noun: 'task', verb: 'update', prependArgs: ['--status', 'done'] },
+    complete: { noun: 'task', verb: 'update', prependArgs: ['--status', 'done'], joinTrailingAsLog: true },
+    done: { noun: 'task', verb: 'update', prependArgs: ['--status', 'done'], joinTrailingAsLog: true },
+    stop: { noun: 'task', verb: 'update', prependArgs: ['--status', 'done'], joinTrailingAsLog: true },
+    finish: { noun: 'task', verb: 'update', prependArgs: ['--status', 'done'], joinTrailingAsLog: true },
     log: { noun: 'log', verb: 'append' },
     show: { noun: 'task', verb: 'ingest' },
     status: { noun: 'task', verb: 'current' },
@@ -40,9 +43,48 @@ export function resolveCommand(noun: string, verb: string, args: string[]): { no
   if (alias) {
     const original = `${noun} ${verb} ${args.join(' ')}`.trim()
     logAlias([noun, verb, ...args], original)
-    return { noun: alias.noun, verb: alias.verb, args: [...(alias.prependArgs || []), ...args] }
+    const transformedArgs = alias.joinTrailingAsLog ? joinTrailingPositionalsAsLog(args) : args
+    return { noun: alias.noun, verb: alias.verb, args: [...(alias.prependArgs || []), ...transformedArgs] }
   }
   return { noun, verb, args }
+}
+
+/**
+ * When a `done`/`finish`-style alias has 2+ positional args, treat the 2nd+ as a `--log` value.
+ * Example: `done my-task "all done"` → update --status done my-task --log "all done"
+ * Single positional (just a task slug) passes through unchanged.
+ * If --log is already explicitly provided, leave positionals as-is (only one log wins).
+ */
+function joinTrailingPositionalsAsLog(args: string[]): string[] {
+  const hasExplicitLog = args.some((a) => a === '--log')
+  if (hasExplicitLog) return args
+
+  // Split into positional (no leading --) and flag (leading --) tokens, preserving flag-value pairs.
+  const positionals: string[] = []
+  const others: string[] = []
+  let i = 0
+  while (i < args.length) {
+    const a = args[i]
+    if (a.startsWith('--')) {
+      // Flag + its value (if next isn't a flag and isn't the last), keep together.
+      others.push(a)
+      if (i + 1 < args.length && !args[i + 1].startsWith('--')) {
+        others.push(args[i + 1])
+        i += 2
+        continue
+      }
+      i++
+      continue
+    }
+    positionals.push(a)
+    i++
+  }
+
+  if (positionals.length < 2) return args
+
+  const task = positionals[0]
+  const message = positionals.slice(1).join(' ')
+  return [task, '--log', message, ...others]
 }
 
 /** Rewrite mistyped --flag names to their canonical equivalents. */
