@@ -26,6 +26,10 @@ describe(toModule(__filename), () => {
       { desc: 'task done my-task "multi word" message → --log joined', input: ['task', 'done', ['my-task', 'all', 'done', 'now']], expected: { noun: 'task', verb: 'update', args: ['--status', 'done', 'my-task', '--log', 'all done now'] } },
       { desc: 'task done --log present skips joining', input: ['task', 'done', ['my-task', '--log', 'msg', 'extra']], expected: { noun: 'task', verb: 'update', args: ['--status', 'done', 'my-task', '--log', 'msg', 'extra'] } },
       { desc: 'task done my-task --status x passes through (1 positional)', input: ['task', 'done', ['my-task', '--status', 'nope']], expected: { noun: 'task', verb: 'update', args: ['--status', 'done', 'my-task', '--status', 'nope'] } },
+      // Single positional with spaces: treat as --log message (task inferred from PWD context)
+      { desc: 'task done \"No session logs in 24h\" → --log only (1 positional w/ spaces)', input: ['task', 'done', ['No session logs in last 24h.']], expected: { noun: 'task', verb: 'update', args: ['--status', 'done', '--log', 'No session logs in last 24h.'] } },
+      { desc: 'task finish \"Update complete\" → --log only (1 positional w/ spaces)', input: ['task', 'finish', ['Update complete.']], expected: { noun: 'task', verb: 'update', args: ['--status', 'done', '--log', 'Update complete.'] } },
+      { desc: 'task complete \"All done here\" → --log only (1 positional w/ spaces)', input: ['task', 'complete', ['All done here']], expected: { noun: 'task', verb: 'update', args: ['--status', 'done', '--log', 'All done here'] } },
     ]
 
     cases.forEach(({ desc, input, expected }) => {
@@ -110,6 +114,9 @@ describe(toModule(__filename), () => {
       { desc: 'task update --note "text" → task update --log "text"', input: ['task', 'update', '--note', 'text'], expected: ['task', 'update', '--log', 'text'] },
       // Combined: alias + arg alias
       { desc: 'task done my-task --summary "done" → task update --status done my-task --log "done"', input: ['task', 'done', 'my-task', '--summary', 'done'], expected: ['task', 'update', '--status', 'done', 'my-task', '--log', 'done'] },
+      // done/complete/stop/finish with single positional containing spaces: treat as --log (message only, task from PWD)
+      { desc: 'task done \"No session logs in last 24h\" → task update --status done --log \"No session logs...\"', input: ['task', 'done', 'No session logs in last 24h.'], expected: ['task', 'update', '--status', 'done', '--log', 'No session logs in last 24h.'] },
+      { desc: 'task finish \"Update complete\" → task update --status done --log \"Update complete\"', input: ['task', 'finish', 'Update complete.'], expected: ['task', 'update', '--status', 'done', '--log', 'Update complete.'] },
       // done/complete/stop/finish with 2+ positionals: 2nd+ becomes --log
       { desc: 'task done my-task "all done" → task update --status done my-task --log "all done"', input: ['task', 'done', 'my-task', 'all done'], expected: ['task', 'update', '--status', 'done', 'my-task', '--log', 'all done'] },
       { desc: 'task finish my-task "summary" → task update --status done my-task --log "summary"', input: ['task', 'finish', 'my-task', 'summary'], expected: ['task', 'update', '--status', 'done', 'my-task', '--log', 'summary'] },

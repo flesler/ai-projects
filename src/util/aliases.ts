@@ -56,7 +56,7 @@ export function resolveCommand(noun: string, verb: string, args: string[]): { no
  * If --log is already explicitly provided, leave positionals as-is (only one log wins).
  */
 function joinTrailingPositionalsAsLog(args: string[]): string[] {
-  const hasExplicitLog = args.some((a) => a === '--log')
+  const hasExplicitLog = args.some(a => a === '--log')
   if (hasExplicitLog) return args
 
   // Split into positional (no leading --) and flag (leading --) tokens, preserving flag-value pairs.
@@ -80,7 +80,16 @@ function joinTrailingPositionalsAsLog(args: string[]): string[] {
     i++
   }
 
-  if (positionals.length < 2) return args
+  if (positionals.length < 2) {
+    // Single positional: if it contains spaces, it's a log message, not a task slug.
+    // Agents in a task PWD run `aip task done "long message"` expecting PWD to supply the task.
+    // Task slugs are single tokens (no spaces). A multi-word positional is a log message.
+    if (positionals.length === 1 && positionals[0].includes(' ')) {
+      const message = positionals[0]
+      return ['--log', message, ...others]
+    }
+    return args
+  }
 
   const task = positionals[0]
   const message = positionals.slice(1).join(' ')
