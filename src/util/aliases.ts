@@ -43,6 +43,19 @@ export function resolveCommand(noun: string, verb: string, args: string[]): { no
   if (alias) {
     const original = `${noun} ${verb} ${args.join(' ')}`.trim()
     logAlias([noun, verb, ...args], original)
+    
+    // Special handling for 'status' alias: GET (no args) vs SET (with args)
+    if (verb === 'status' && noun === 'task') {
+      if (args.length === 0) {
+        // GET: task status → task current
+        return { noun: 'task', verb: 'current', args: [] }
+      } else {
+        // SET: task status <value> → task update --status <value>
+        const transformedArgs = joinTrailingPositionalsAsLog(args)
+        return { noun: 'task', verb: 'update', args: ['--status', ...transformedArgs] }
+      }
+    }
+    
     const transformedArgs = alias.joinTrailingAsLog ? joinTrailingPositionalsAsLog(args) : args
     return { noun: alias.noun, verb: alias.verb, args: [...(alias.prependArgs || []), ...transformedArgs] }
   }
