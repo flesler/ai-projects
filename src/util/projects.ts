@@ -212,7 +212,7 @@ const projects = {
   ): Promise<Partial<TaskFrontmatter>> {
     const mainPath = util.join(this.getTaskDir(projectSlug, taskSlug), config.files.MAIN)
     const current = await readFrontmatter<TaskFrontmatter>(mainPath)
-    if (current?.status === TaskStatus.ONGOING) {
+    if (current?.status === TaskStatus.ONGOING && updates.status && updates.status !== current.status) {
       throw new Error('Cannot update ongoing task. Should be done by user or update manually')
     }
     return await updateFrontmatter(mainPath, updates)
