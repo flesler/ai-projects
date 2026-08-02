@@ -43,7 +43,7 @@ export function resolveCommand(noun: string, verb: string, args: string[]): { no
   if (alias) {
     const original = `${noun} ${verb} ${args.join(' ')}`.trim()
     logAlias([noun, verb, ...args], original)
-    
+
     // Special handling for 'status' alias: GET (no args) vs SET (with args)
     if (verb === 'status' && noun === 'task') {
       if (args.length === 0) {
@@ -55,7 +55,29 @@ export function resolveCommand(noun: string, verb: string, args: string[]): { no
         return { noun: 'task', verb: 'update', args: ['--status', ...transformedArgs] }
       }
     }
-    
+
+    // Special handling for 'log' alias: task log <slug> <message> → log append --task <slug> <message>
+    if (verb === 'log' && noun === 'task') {
+      if (args.length >= 2) {
+        // Two or more positionals: first is task slug, rest is message
+        const taskSlug = args[0]
+        const message = args.slice(1).join(' ')
+        return { noun: 'log', verb: 'append', args: ['--task', taskSlug, message] }
+      } else if (args.length === 1) {
+        // Single positional: if it contains spaces, it's a message; otherwise it's a task slug
+        const onlyArg = args[0]
+        if (onlyArg.includes(' ')) {
+          // Multi-word single positional: treat as message (pass through as-is)
+          return { noun: 'log', verb: 'append', args: [onlyArg] }
+        } else {
+          // Single token: treat as task slug, no message (will prompt or use default)
+          return { noun: 'log', verb: 'append', args: ['--task', onlyArg] }
+        }
+      }
+      // No args: pass through to log append (will prompt for message)
+      return { noun: 'log', verb: 'append', args: [] }
+    }
+
     const transformedArgs = alias.joinTrailingAsLog ? joinTrailingPositionalsAsLog(args) : args
     return { noun: alias.noun, verb: alias.verb, args: [...(alias.prependArgs || []), ...transformedArgs] }
   }
