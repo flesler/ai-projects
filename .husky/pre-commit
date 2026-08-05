@@ -28,9 +28,27 @@ if ! command -v npm >/dev/null 2>&1 && [ -s "$HOME/.nvm/nvm.sh" ]; then
   nvm use
 fi
 
-# Generate documentation and run lint:fix
-npm run test:full
-if [ $? -ne 0 ]; then
-  echo "Checks failed; aborting commit."
+# lint:fix may rewrite working-tree files; re-stage only paths that were fully staged
+# (index matched working tree before lint) so partial hunks stay partial.
+fully_staged=""
+for file in $(git diff --cached --name-only); do
+  if git diff --quiet -- "$file"; then
+    fully_staged="$fully_staged $file"
+  fi
+done
+
+if ! npm run lint:full; then
+  echo "Lint failed; aborting commit."
+  exit 1
+fi
+
+for file in $fully_staged; do
+  if [ -e "$file" ] || [ -L "$file" ]; then
+    git add -- "$file"
+  fi
+done
+
+if ! npm test; then
+  echo "Tests failed; aborting commit."
   exit 1
 fi
