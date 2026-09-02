@@ -97,6 +97,9 @@ describe(toModule(__filename), () => {
       { desc: 'positional args without = unchanged', input: ['my-task'], expected: ['my-task'] },
       { desc: 'empty value after =', input: ['name='], expected: ['--name', ''] },
       { desc: 'value containing =', input: ['formula=a=b'], expected: ['--formula', 'a=b'] },
+      { desc: '>=2 not split (invalid option name)', input: ['>=2'], expected: ['>=2'] },
+      { desc: 'message with >=2 not split', input: ['meets >=2 threshold'], expected: ['meets >=2 threshold'] },
+      { desc: '=> not split', input: ['=>'], expected: ['=>'] },
       { desc: 'empty args', input: [], expected: [] },
     ]
 

@@ -152,7 +152,14 @@ export function resolveKeyValueArgs(args: string[]): string[] {
   for (const arg of args) {
     const eqIdx = arg.indexOf('=')
     if (eqIdx > 0 && !arg.startsWith('-')) {
-      result.push(`--${arg.slice(0, eqIdx)}`, arg.slice(eqIdx + 1))
+      const key = arg.slice(0, eqIdx)
+      // Only split if the key looks like a valid option name (alphanumeric, hyphens, underscores)
+      // This prevents splitting on things like ">=2" which would become "--> 2"
+      if (/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(key)) {
+        result.push(`--${key}`, arg.slice(eqIdx + 1))
+      } else {
+        result.push(arg)
+      }
     } else {
       result.push(arg)
     }
