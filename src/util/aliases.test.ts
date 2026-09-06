@@ -144,6 +144,13 @@ describe(toModule(__filename), () => {
       { desc: 'task finish my-task "summary" → task update --status done my-task --log "summary"', input: ['task', 'finish', 'my-task', 'summary'], expected: ['task', 'update', '--status', 'done', 'my-task', '--log', 'summary'] },
       // Project aliases
       { desc: 'project done my-project → project update --status done my-project', input: ['project', 'done', 'my-project'], expected: ['project', 'update', '--status', 'done', 'my-project'] },
+      // help <noun> → <noun> --help
+      { desc: 'help task → task --help', input: ['help', 'task'], expected: ['task', '--help'] },
+      { desc: 'help project → project --help', input: ['help', 'project'], expected: ['project', '--help'] },
+      { desc: 'help agent → agent --help', input: ['help', 'agent'], expected: ['agent', '--help'] },
+      // Valid help subcommands pass through unchanged
+      { desc: 'help quickstart passes through', input: ['help', 'quickstart'], expected: ['help', 'quickstart'] },
+      { desc: 'help api passes through', input: ['help', 'api'], expected: ['help', 'api'] },
       // Passthrough: non-aliased commands unchanged
       { desc: 'task update --status done passes through', input: ['task', 'update', '--status', 'done'], expected: ['task', 'update', '--status', 'done'] },
       { desc: 'agent list passes through', input: ['agent', 'list'], expected: ['agent', 'list'] },

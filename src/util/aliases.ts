@@ -210,6 +210,9 @@ export function resolvePositionalFlagMisuse(args: string[], positionalArgNames: 
   return result
 }
 
+/** Nouns that agents commonly try via `aip help <noun>` (e.g. `help task` → `task --help`). */
+const knownNouns = ['agent', 'help', 'hook', 'log', 'project', 'skill', 'task', 'util'] as const
+
 /** Transform raw CLI args through all alias layers: command aliases → key=value → arg aliases.
  *  Accepts the full `[noun, verb, ...rest]` array and returns the rewritten version. */
 export function transformArgs(args: string[]): string[] {
@@ -220,6 +223,12 @@ export function transformArgs(args: string[]): string[] {
     logAlias([noun], 'task list')
     const extraArgs = verb ? [verb, ...rest] : rest
     return ['task', 'list', ...extraArgs]
+  }
+
+  // `aip help <noun>` → `aip <noun> --help` — agents naturally try `help task` etc. (recurring).
+  if (noun === 'help' && verb && (knownNouns as readonly string[]).includes(verb)) {
+    logAlias([noun, verb, ...rest], `${verb} --help ${rest.join(' ')}`.trim())
+    return [verb, '--help', ...rest]
   }
 
   const cmdResult = resolveCommand(noun, verb, rest)
